@@ -2,12 +2,19 @@
   "appId": "com.aiio.app",
   "appName": "Aiio",
   "webDir": "www",
-  "backgroundColor": "#F6F5F1",
+  "backgroundColor": "#F2F4F1",
   "loggingBehavior": "production",
   "android": {
-    "backgroundColor": "#F6F5F1",
+    "backgroundColor": "#F2F4F1",
     "allowMixedContent": false,
     "captureInput": false,
     "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css",
+      "initialViewportFitValueHint": "cover",
+      "hidden": false
+    }
   }
 }
