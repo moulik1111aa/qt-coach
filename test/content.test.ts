@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CHAPTERS } from '../src/content/index.ts';
+import { CHAPTERS, topicById } from '../src/content/index.ts';
 import { checkCourse, checkQuestion, type Problem } from '../src/content/check.ts';
 import { addSubQ } from '../src/content/ch02/build.ts';
 import { gradeCheckpoint } from '../src/core/grade.ts';
@@ -28,7 +28,7 @@ test('the checker catches a broken question', () => {
 });
 
 test('the book addition example: 7, 14, 6, 7', () => {
-  const t = CHAPTERS[0].topics[0];
+  const t = topicById('m-addsub')!;
   const bk = t.examples.find((e) => e.id === 'm-addsub:bk1')!;
   const res = bk.checkpoints[bk.checkpoints.length - 1];
   assert.equal(gradeCheckpoint(res, '7,14;6,7'), 'right');

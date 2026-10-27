@@ -2,10 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { freshSave, freshTopic, memoryStorage, SaveStore } from '../src/storage/save.ts';
 import { addMistake, ladderLevel, recordCheck, recordPaper, reviseMistake, stages, toughUnlocked } from '../src/core/progress.ts';
-import { CHAPTERS } from '../src/content/index.ts';
+import { topicById } from '../src/content/index.ts';
 import type { PaperQuestion } from '../src/content/types.ts';
 
-const topic = CHAPTERS[0].topics[0];
+const topic = topicById('m-addsub')!;
 const examQ = topic.paper.find((q) => q.level === 'exam')!;
 const basicQ = topic.paper.find((q) => q.level === 'basic')!;
 const toughQ = topic.paper.find((q) => q.level === 'tough')!;
