@@ -3,6 +3,7 @@
 import { h, escapeHtml, type App, type Screen } from './app.ts';
 import { ICONS } from './icons.ts';
 import { mathBlock, richHtml } from './math.ts';
+import { fitMath } from './fit.ts';
 import { bar } from './course.ts';
 import { paperScreen, freshFromGen } from './paper.ts';
 import { checkScreen } from './check.ts';
@@ -17,7 +18,7 @@ export function formulaScreen(ch: Chapter): (app: App) => Screen {
       <dl class="fsheet">${ch.formulas.map((f) => `<div class="f"><dt>${escapeHtml(f.name)}</dt><dd>${mathBlock(f.math)}<p class="muted">${richHtml(f.use)}</p></dd></div>`).join('')}</dl>
     </main></div>`);
     el.prepend(bar(app, ch.title, 'Formula sheet'));
-    return { el };
+    return { el, mounted: () => fitMath(el) };
   };
 }
 

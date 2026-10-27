@@ -3,6 +3,7 @@
 import { h, escapeHtml, type App, type Screen } from './app.ts';
 import { ICONS } from './icons.ts';
 import { boardHtml, fitBoards, setBoardStep } from './boards.ts';
+import { fitMath } from './fit.ts';
 import { mathBlock, richHtml } from './math.ts';
 import { showSheet, button } from './sheet.ts';
 import { paperScreen } from './paper.ts';
@@ -190,6 +191,7 @@ export function learnScreen(o: LearnOpts): (app: App) => Screen {
         <article class="card"><h1>${richHtml(c.title)}</h1>${c.body.map(blockHtml).join('')}</article>`;
       main.querySelectorAll<HTMLElement>('.board').forEach((b) => setBoardStep(b, Infinity));
       fitBoards(main);
+      fitMath(main);
       foot.replaceChildren();
       const row = h('<div class="foot-row"></div>');
       if (i > 0) row.append(button('Back', 'line', () => ((i -= 1), draw(), window.scrollTo(0, 0))));

@@ -51,7 +51,9 @@ export const cramer3: Topic = {
       page: 3,
       body: [
         { p: 'For three equations' },
-        { math: 'a_1x + b_1y + c_1z = h_1, \\quad a_2x + b_2y + c_2z = h_2, \\quad a_3x + b_3y + c_3z = h_3' },
+        { math: 'a_1x + b_1y + c_1z = h_1' },
+        { math: 'a_2x + b_2y + c_2z = h_2' },
+        { math: 'a_3x + b_3y + c_3z = h_3' },
         { p: 'the denominator is the third-order determinant of the coefficients, and each numerator replaces one column with the right-hand sides:' },
         { math: 'x = \\frac{\\det{h_1 & b_1 & c_1 \\\\ h_2 & b_2 & c_2 \\\\ h_3 & b_3 & c_3}}{\\det{a_1 & b_1 & c_1 \\\\ a_2 & b_2 & c_2 \\\\ a_3 & b_3 & c_3}}, \\quad y = \\frac{\\det{a_1 & h_1 & c_1 \\\\ a_2 & h_2 & c_2 \\\\ a_3 & h_3 & c_3}}{D}, \\quad z = \\frac{\\det{a_1 & b_1 & h_1 \\\\ a_2 & b_2 & h_2 \\\\ a_3 & b_3 & h_3}}{D}' },
         { bookNote: 'The printed formula for $x$ has $h_3$ in the bottom-left of the denominator; it should be $a_3$. The printed expansion also shows "$-\\,c_1(\\ldots)$" for the last term; it is $+\\,c_1(\\ldots)$, as in the rule on the same page.' },

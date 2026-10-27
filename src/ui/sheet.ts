@@ -8,6 +8,7 @@
 
 import { h, escapeHtml, type App } from './app.ts';
 import { boardHtml, fitBoards, setBoardStep } from './boards.ts';
+import { fitMath } from './fit.ts';
 import { mathBlock, mathHtml, richHtml, spokenText } from './math.ts';
 import { ICONS } from './icons.ts';
 import { answerText, matRows } from '../core/grade.ts';
@@ -108,6 +109,7 @@ export function showSheet(app: App, q: PaperQuestion, o: SheetOpts): void {
       s.classList.toggle('current', o.mode === 'walk' && i === shownTo);
     });
     if (boardEl) setBoardStep(boardEl, shownTo);
+    fitMath(el);
     foot.replaceChildren();
     if (o.mode === 'walk' && shownTo < last) {
       foot.append(

@@ -7,6 +7,12 @@ import { cramer2Q, det2Q, singularQ } from './build.ts';
 
 const T = 'd-2x2';
 
+// The elimination example on the first card: equations are [x-number, y-number, right side].
+const E1 = [2, 3, 12];
+const E2 = [3, 2, 13];
+const Y = (E1[2] * E2[0] - E2[2] * E1[0]) / (E1[1] * E2[0] - E2[1] * E1[0]);
+const X = (E1[2] - E1[1] * Y) / E1[0];
+
 /** Two equations with a whole-number solution and D ≠ 0. */
 export function pair(rng: Rng, lo: number, hi: number, solLo: number, solHi: number): number[][] {
   for (;;) {
@@ -61,17 +67,45 @@ export const two: Topic = {
       ],
     },
     {
-      id: 'derive',
-      title: 'Where determinants come from',
+      id: 'elim',
+      title: 'Solving two equations: the elimination idea',
       page: 1,
       body: [
-        { p: 'The book starts from a pair of simultaneous equations:' },
-        { math: 'a_1x + b_1y = h_1 \\quad (1) \\qquad a_2x + b_2y = h_2 \\quad (2)' },
-        { p: 'Multiply (1) by $a_2$ and (2) by $a_1$, then subtract to eliminate $x$:' },
-        { math: 'a_1b_2y - a_2b_1y = a_1h_2 - a_2h_1 \\Rightarrow y = \\frac{a_1h_2 - a_2h_1}{a_1b_2 - a_2b_1}' },
-        { p: 'Substituting back gives' },
+        { p: 'Two equations with two unknowns cannot be solved one at a time: each contains both $x$ and $y$. The trick is to **eliminate** (remove) one unknown, so only one is left.' },
+        { p: `Take this pair:` },
+        { math: `${E1[0]}x + ${E1[1]}y = ${E1[2]} \\quad (1)` },
+        { math: `${E2[0]}x + ${E2[1]}y = ${E2[2]} \\quad (2)` },
+        { p: `The x-terms are $${E1[0]}x$ and $${E2[0]}x$. Subtracting one equation from the other now would leave $${E2[0] - E1[0]}x$, so $x$ would not disappear. First make the two x-terms **equal**.` },
+        { p: `**Why multiplying is allowed:** an equation is a balance. Multiplying every term on both sides by the same number keeps it true, just as $2 = 2$ gives $6 = 6$.` },
+        { p: `Multiply (1) by ${E2[0]} and (2) by ${E1[0]}. Each equation is multiplied by the **other** equation's x-number, so both x-terms become $${E1[0] * E2[0]}x$:` },
+        { math: `${E1[0] * E2[0]}x + ${E1[1] * E2[0]}y = ${E1[2] * E2[0]} \\quad (3)` },
+        { math: `${E1[0] * E2[0]}x + ${E2[1] * E1[0]}y = ${E2[2] * E1[0]} \\quad (4)` },
+        { p: `Now subtract (4) from (3). The x-terms cancel ($${E1[0] * E2[0]}x - ${E1[0] * E2[0]}x = 0$):` },
+        { math: `${E1[1] * E2[0] - E2[1] * E1[0]}y = ${E1[2] * E2[0] - E2[2] * E1[0]} \\Rightarrow y = ${Y}` },
+        { p: `Put $y = ${Y}$ back into (1) to find $x$:` },
+        { math: `${E1[0]}x + ${E1[1] * Y} = ${E1[2]} \\Rightarrow x = ${X}` },
+        { tip: `Check in (2): $${E2[0]}(${X}) + ${E2[1]}(${Y}) = ${E2[0] * X + E2[1] * Y}$ ✓. This is the **elimination method**. The determinant formula is a shortcut that does exactly these steps for you.` },
+      ],
+    },
+    {
+      id: 'derive',
+      title: 'The same steps with letters',
+      page: 1,
+      body: [
+        { p: 'The book does the same thing for any pair of equations. The letters $a, b, h$ stand for the numbers:' },
+        { math: 'a_1x + b_1y = h_1 \\quad (1)' },
+        { math: 'a_2x + b_2y = h_2 \\quad (2)' },
+        { p: 'To make the x-terms equal, multiply (1) by $a_2$ and (2) by $a_1$ (each by the other equation\'s x-number). Both x-terms become $a_1a_2x$:' },
+        { math: 'a_1a_2x + a_2b_1y = a_2h_1 \\quad (3)' },
+        { math: 'a_1a_2x + a_1b_2y = a_1h_2 \\quad (4)' },
+        { p: 'Subtract (3) from (4). The x-terms cancel:' },
+        { math: 'a_1b_2y - a_2b_1y = a_1h_2 - a_2h_1' },
+        { p: 'Take $y$ out as a common factor, then divide both sides by the bracket:' },
+        { math: 'y(a_1b_2 - a_2b_1) = a_1h_2 - a_2h_1' },
+        { math: 'y = \\frac{a_1h_2 - a_2h_1}{a_1b_2 - a_2b_1}' },
+        { p: 'Putting this $y$ back into (1) and rearranging, in the same way, gives' },
         { math: 'x = \\frac{h_1b_2 - h_2b_1}{a_1b_2 - a_2b_1}' },
-        { p: 'Both answers share the denominator $a_1b_2 - a_2b_1$. Writing it as a determinant makes the formula easy to remember.' },
+        { p: 'Both answers have the **same denominator**, $a_1b_2 - a_2b_1$. The next card shows how writing it as a determinant makes these formulas easy to remember.' },
       ],
     },
     {
