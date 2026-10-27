@@ -1,12 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { CHAPTERS, topicById } from '../src/content/index.ts';
+import { PRIMERS } from '../src/content/primers/index.ts';
 import { checkCourse, checkQuestion, type Problem } from '../src/content/check.ts';
 import { addSubQ } from '../src/content/ch02/build.ts';
 import { gradeCheckpoint } from '../src/core/grade.ts';
 
 test('the course passes its content checks', () => {
-  const problems = checkCourse(CHAPTERS, 60);
+  const problems = checkCourse(CHAPTERS, 60, PRIMERS);
   assert.deepEqual(problems.slice(0, 8), []);
 });
 
