@@ -1,0 +1,119 @@
+/* Boards: the working picture. Highlights are highlighter-yellow, like a student's marker. */
+
+.board {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.board [data-t] { transition: opacity 220ms var(--ease), background-color 220ms; }
+.board .off { opacity: 0; }
+.board tr.off, .board .bd-line.off { display: none; }
+
+.bd-cap { margin-top: 8px; font-size: 0.85em; color: var(--ink-2); }
+
+/* Table */
+.bd-tablewrap { overflow-x: auto; }
+.bd-table { border-collapse: collapse; margin: 0 auto; font-variant-numeric: tabular-nums; }
+.bd-table th, .bd-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--rule);
+  text-align: center;
+  white-space: nowrap;
+}
+.bd-table thead th { font-weight: 600; font-size: 0.86em; color: var(--ink-2); border-bottom: 1.5px solid var(--rule-2); }
+.bd-table tbody th { font-weight: 600; text-align: left; }
+.bd-table tr.lit > *, .bd-table .lit { background: var(--marker); }
+.bd-table .tn-good { color: var(--green); font-weight: 700; }
+.bd-table .tn-bad { color: var(--red); text-decoration: line-through; }
+.bd-table .tn-dim { color: var(--ink-3); }
+.bd-table .tn-key { font-weight: 700; }
+.bd-note { color: var(--ink-2); font-size: 0.85em; text-align: left !important; border-bottom: 0 !important; }
+
+/* Matrices and determinants */
+.bd-mats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 4px;
+  font-family: var(--mathf);
+  font-size: 1.12em;
+}
+.bd-term { display: inline-flex; align-items: center; gap: 6px; }
+.bd-name { font-family: var(--mathf); }
+.bd-op { padding: 0 4px; }
+.bd-mat {
+  position: relative;
+  display: inline-flex;
+  padding: 4px 12px;
+}
+.bd-mat::before, .bd-mat::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  border: 1.5px solid currentColor;
+}
+.bd-mat::before { left: 0; border-right: 0; }
+.bd-mat::after { right: 0; border-left: 0; }
+.bd-mat.br-paren::before { border-radius: 10px 0 0 10px; }
+.bd-mat.br-paren::after { border-radius: 0 10px 10px 0; }
+.bd-mat.br-bar::before { width: 0; border-width: 0 0 0 1.5px; }
+.bd-mat.br-bar::after { width: 0; border-width: 0 1.5px 0 0; }
+.bd-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(2.1em, auto));
+  gap: 2px 4px;
+  align-items: center;
+}
+.bd-cell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.9em;
+  padding: 0 6px;
+}
+.bd-cell.lit { color: var(--blue); font-weight: 700; }
+.bd-mark { z-index: 0; border-radius: 6px; margin: -1px -2px; }
+.bd-mark.row.lit, .bd-mark.col.lit, .bd-mark.cell.lit { background: var(--marker); }
+.bd-mark.row.tone-b.lit, .bd-mark.col.tone-b.lit, .bd-mark.cell.tone-b.lit { background: var(--blue-soft); }
+.bd-mark.strike-row, .bd-mark.strike-col {
+  z-index: 2;
+  background: color-mix(in srgb, var(--sheet) 62%, transparent);
+  pointer-events: none;
+}
+.bd-mark.strike-row::after, .bd-mark.strike-col::after {
+  content: "";
+  position: absolute;
+  background: var(--red);
+  opacity: 0.7;
+}
+.bd-mark.strike-row::after { left: 0; right: 0; top: 50%; height: 1.5px; }
+.bd-mark.strike-col::after { top: 0; bottom: 0; left: 50%; width: 1.5px; }
+.bd-mark.strike-row, .bd-mark.strike-col { position: relative; }
+.bd-x {
+  position: absolute;
+  inset: 4px 12px;
+  width: calc(100% - 24px);
+  height: calc(100% - 8px);
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+.bd-x line { stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.bd-x.diag line { stroke: var(--blue); }
+.bd-x.anti line { stroke: var(--red); }
+
+/* Lines of working */
+.bd-lines { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.bd-line { font-size: 1.12em; padding: 2px 6px; border-radius: 6px; }
+.bd-line.lit { background: var(--marker); }
+.bd-line.tn-good { color: var(--green); font-weight: 700; }
+.bd-line.tn-key { font-weight: 700; }

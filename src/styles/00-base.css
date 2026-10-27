@@ -1,1 +1,156 @@
-body{margin:0}
+/* Aiio — an exam answer booklet: cool paper, blue-black ink, the learner's entries in blue ink,
+   an examiner-red margin rule, highlighter yellow on the working. */
+
+:root,
+:root[data-theme="light"] {
+  --paper: #F2F4F1;
+  --sheet: #FBFCFA;
+  --ink: #1D2433;
+  --ink-2: #4A5468;
+  --ink-3: #7A8396;
+  --rule: #DADFE4;
+  --rule-2: #C7CED6;
+  --blue: #2747C9;
+  --blue-soft: #E5EAFB;
+  --red: #C23B33;
+  --red-soft: #FBE9E7;
+  --green: #1E7A4C;
+  --green-soft: #E2F2E8;
+  --marker: #FFE58A;
+  --note: #FFF6D8;
+  --note-line: #E3B23C;
+  --shadow: 0 1px 0 rgba(29, 36, 51, 0.06), 0 6px 18px -10px rgba(29, 36, 51, 0.25);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper: #12151C;
+  --sheet: #1A1F29;
+  --ink: #E7EAF0;
+  --ink-2: #B3BBCA;
+  --ink-3: #828CA0;
+  --rule: #2B3240;
+  --rule-2: #3A4252;
+  --blue: #8EA5FF;
+  --blue-soft: #232C4A;
+  --red: #EE7A70;
+  --red-soft: #3A2224;
+  --green: #6ACB97;
+  --green-soft: #1C3328;
+  --marker: #6B5A17;
+  --note: #2E2918;
+  --note-line: #C9A03A;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.3), 0 8px 20px -12px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+:root {
+  --ui: "Inter Display", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mathf: "Schola", "TeX Gyre Schola", "Century Schoolbook", Georgia, serif;
+  --fs: 17px;
+  --gut: 18px;
+  --margin-x: 44px;
+  --radius: 10px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+:root[data-size="small"] { --fs: 15.5px; }
+:root[data-size="large"] { --fs: 19px; }
+:root[data-size="xl"] { --fs: 21px; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: var(--fs);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body { overscroll-behavior: none; }
+
+#app {
+  min-height: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  position: relative;
+}
+
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.01em; margin: 0; line-height: 1.2; }
+h1 { font-size: 1.75em; letter-spacing: -0.02em; }
+h2 { font-size: 1.3em; }
+h3 { font-size: 1.05em; }
+p { margin: 0 0 0.75em; }
+b { font-weight: 700; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+button:focus-visible, [tabindex]:focus-visible, input:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.muted { color: var(--ink-2); }
+.faint { color: var(--ink-3); }
+.small { font-size: 0.86em; }
+
+/* Buttons: one solid action per screen, the rest quiet. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 20px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: transform 120ms var(--ease), background 160ms;
+}
+.btn:active { transform: scale(0.98); }
+.btn.solid { background: var(--blue); color: #fff; }
+:root[data-theme="dark"] .btn.solid { color: #10162B; }
+.btn.line { border: 1.5px solid var(--rule-2); background: var(--sheet); }
+.btn.ghost { color: var(--blue); padding: 0 8px; min-height: 44px; }
+.btn.wide { width: 100%; }
+.btn[disabled] { opacity: 0.45; pointer-events: none; }
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink-2);
+}
+.icon-btn svg { width: 22px; height: 22px; }
+.icon-btn:active { background: var(--rule); }
+
+/* Level tags. */
+.lvl {
+  display: inline-block;
+  font-size: 0.72em;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 99px;
+  border: 1px solid currentColor;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+.lvl.basic { color: var(--ink-2); }
+.lvl.exam { color: var(--blue); }
+.lvl.tough { color: var(--red); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

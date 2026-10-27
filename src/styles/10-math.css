@@ -1,0 +1,89 @@
+/* Maths, set like a printed textbook. */
+
+.m {
+  font-family: var(--mathf);
+  font-size: 1.08em;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  vertical-align: middle;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.mblock { display: flex; font-size: 1.25em; margin: 0.35em 0; }
+.mi { font-style: italic; }
+.mi.up, .mn, .mo, .mtext { font-style: normal; }
+.mtext { font-family: var(--ui); font-size: 0.86em; padding: 0 0.15em; }
+.mo.bin { padding: 0 0.22em; }
+.mo.rel { padding: 0 0.3em; }
+.mo.punct { padding-right: 0.25em; }
+.msp { display: inline-block; width: 0.2em; }
+.mquad { display: inline-block; width: 1em; }
+.mg { display: inline-flex; align-items: center; }
+
+.mss {
+  display: inline-flex;
+  flex-direction: column;
+  font-size: 0.7em;
+  line-height: 1;
+  margin-left: 0.04em;
+  align-self: stretch;
+  justify-content: space-between;
+}
+.mss .msup { transform: translateY(-0.35em); }
+.mss .msup.e { height: 0.6em; }
+.mss .msub { transform: translateY(0.25em); }
+.mss:not(:has(.msub)) { justify-content: flex-start; }
+
+.mfrac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.12em;
+  font-size: 0.92em;
+  vertical-align: middle;
+}
+.mnum, .mden { display: flex; align-items: center; justify-content: center; padding: 0 0.2em; }
+.mnum { border-bottom: 1.2px solid currentColor; padding-bottom: 0.08em; }
+.mden { padding-top: 0.08em; }
+
+.msqrt { display: inline-flex; align-items: stretch; }
+.mrad { font-size: 1.15em; line-height: 1; align-self: center; }
+.mrd { border-top: 1.2px solid currentColor; padding: 0.08em 0.12em 0; display: inline-flex; align-items: center; }
+
+.mbar { text-decoration: overline; text-decoration-thickness: 1.2px; display: inline-flex; }
+
+.mbig { display: inline-flex; flex-direction: column; align-items: center; margin: 0 0.15em; line-height: 1; }
+.mbigc { font-size: 1.5em; line-height: 1; }
+.mlim { font-size: 0.62em; }
+
+/* Matrices: a grid with brackets drawn as borders. */
+.mmat {
+  display: inline-flex;
+  position: relative;
+  padding: 0.12em 0.5em;
+  margin: 0.1em 0.15em;
+  vertical-align: middle;
+}
+.mgrid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), auto);
+  gap: 0.15em 0.9em;
+  justify-items: center;
+  align-items: center;
+}
+.mmat::before, .mmat::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0.38em;
+  border: 1.4px solid currentColor;
+}
+.mmat::before { left: 0; border-right: 0; }
+.mmat::after { right: 0; border-left: 0; }
+.mmat.br-paren::before { border-radius: 0.5em 0 0 0.5em; }
+.mmat.br-paren::after { border-radius: 0 0.5em 0.5em 0; }
+.mmat.br-bar::before, .mmat.br-bar::after { width: 0; border-width: 0 0 0 1.4px; }
+.mmat.br-bar::after { border-width: 0 1.4px 0 0; }
+.mcell { display: inline-flex; align-items: center; min-width: 0.6em; justify-content: center; }
