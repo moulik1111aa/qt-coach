@@ -119,9 +119,10 @@ export function cramer2Q(meta: Meta, eqs: Num[][], vars: [string, string] = ['x'
   const board: MatsBoard = {
     kind: 'mats',
     terms: [
-      detTerm(coef, '$D =$', [], { at: 1 }),
-      detTerm(dx, `$D_${vx} =$`, [{ type: 'col', j: 0, at: 2, hl: 2, tone: 'a' }], { at: 2 }),
-      detTerm(dy, `$D_${vy} =$`, [{ type: 'col', j: 1, at: 3, hl: 3, tone: 'a' }], { at: 3 }),
+      detTerm(coef, '$D =$', [], { at: 0, until: 2 }),
+      detTerm(dx, `$D_${vx} =$`, [{ type: 'col', j: 0, at: 2, hl: 2, tone: 'a' }], { at: 2, until: 3 }),
+      detTerm(dy, `$D_${vy} =$`, [{ type: 'col', j: 1, at: 3, hl: 3, tone: 'a' }], { at: 3, until: 4 }),
+      detTerm(coef, '$D =$', [], { at: 4 }),
     ],
   };
   const dxWrong = swapCol(coef, h, 1);
@@ -279,7 +280,7 @@ export function cramer3Q(meta: Meta, eqs: Num[][], vars: [string, string, string
   ];
   const board: MatsBoard = {
     kind: 'mats',
-    terms: [detTerm(coef, '$D =$', [], { at: 1, until: 2 }), ...[0, 1, 2].map((c) => detTerm(swapCol(coef, h, c), `$D_${vars[c]} =$`, [{ type: 'col', j: c, at: c + 2, hl: c + 2 }], { at: c + 2, until: c + 3 }))],
+    terms: [detTerm(coef, '$D =$', [], { at: 0, until: 2 }), ...[0, 1, 2].map((c) => detTerm(swapCol(coef, h, c), `$D_${vars[c]} =$`, [{ type: 'col', j: c, at: c + 2, hl: c + 2 }], { at: c + 2, until: c + 3 })), detTerm(coef, '$D =$', [], { at: 5 })],
   };
   const solDp = Math.max(...sol.map(dpFor));
   const cps = [

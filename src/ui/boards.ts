@@ -72,7 +72,7 @@ function matHtml(t: MatTerm): string {
     }
   }
   const name = t.name ? `<span class="bd-name">${richHtml(t.name)}</span>` : '';
-  return `<span class="bd-term"${timed(t)}>${name}<span class="bd-mat br-${t.br}"><span class="bd-grid" style="--cols:${cols}">${marks}${cells}</span>${lines}</span></span>`;
+  return `<span class="bd-term"${timed(t)}>${name}<span class="bd-mat br-${t.br}"><span class="bd-grid" style="--cols:${cols};--rows:${rows}">${marks}${cells}</span>${lines}</span></span>`;
 }
 
 function matsHtml(b: MatsBoard): string {

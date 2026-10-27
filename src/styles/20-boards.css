@@ -10,6 +10,7 @@
 }
 .board [data-t] { transition: opacity 220ms var(--ease), background-color 220ms; }
 .board .off { opacity: 0; }
+.board .bd-term.off, .board .bd-op.off { display: none; }
 .board tr.off, .board .bd-line.off { display: none; }
 
 .bd-cap { margin-top: 8px; font-size: 0.85em; color: var(--ink-2); }
@@ -70,6 +71,7 @@
   position: relative;
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(1.7em, auto));
+  grid-template-rows: repeat(var(--rows), auto);
   gap: 2px 4px;
   align-items: center;
 }
@@ -83,7 +85,7 @@
   padding: 0 4px;
 }
 .bd-cell.lit { color: var(--blue); font-weight: 700; }
-.bd-mark { z-index: 0; border-radius: 6px; margin: -1px -2px; }
+.bd-mark { z-index: 0; border-radius: 6px; margin: -1px -2px; align-self: stretch; justify-self: stretch; }
 .bd-mark.row.lit, .bd-mark.col.lit, .bd-mark.cell.lit { background: var(--marker); }
 .bd-mark.row.tone-b.lit, .bd-mark.col.tone-b.lit, .bd-mark.cell.tone-b.lit { background: var(--blue-soft); }
 .bd-mark.strike-row, .bd-mark.strike-col {

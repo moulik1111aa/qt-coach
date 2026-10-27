@@ -97,8 +97,9 @@ class Parser {
 function render(src: string): string {
   const p = new Parser(src);
   let out = '';
-  const st: { last: 'start' | 'op' | 'atom' } = { last: 'start' };
+  const st: { last: 'start' | 'op' | 'atom'; pos: number } = { last: 'start', pos: 0 };
   const atom = (h: string) => {
+    st.pos = out.length;
     out += h;
     st.last = 'atom';
   };
@@ -118,7 +119,10 @@ function render(src: string): string {
       } else break;
     }
     if (sup || sub) {
-      out += `<span class="mss">${sup ? `<span class="msup">${sup}</span>` : '<span class="msup e"></span>'}${sub ? `<span class="msub">${sub}</span>` : ''}</span>`;
+      // Wrap the base and its scripts together, so scripts sit against the base, not the line.
+      const base = out.slice(st.pos);
+      const scr = `<span class="mss${sup ? '' : ' only-sub'}${sub ? '' : ' only-sup'}">${sup ? `<span class="msup">${sup}</span>` : ''}${sub ? `<span class="msub">${sub}</span>` : ''}</span>`;
+      out = `${out.slice(0, st.pos)}<span class="msx">${base}${scr}</span>`;
     }
   };
   while (!p.eof()) {
@@ -156,8 +160,8 @@ function render(src: string): string {
         atom(`<span class="mmat br-${br}" style="--cols:${cols}"><span class="mgrid">${cells}</span></span>`);
       } else if (cmd === ',' || cmd === ';' || cmd === ':' || cmd === ' ') {
         out += '<span class="msp"></span>';
-      } else if (cmd === 'quad') {
-        out += '<span class="mquad"></span>';
+      } else if (cmd === 'quad' || cmd === 'qquad') {
+        out += `<span class="mquad"${cmd === 'qquad' ? ' style="width:2em"' : ''}></span>`;
       } else if (cmd === 'left' || cmd === 'right') {
         // Delimiters scale naturally with flex alignment; the next char is drawn as usual.
       } else if (cmd === '{' || cmd === '}' || cmd === '%' || cmd === '&' || cmd === '_' || cmd === '$') {
