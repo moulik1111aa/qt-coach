@@ -94,6 +94,8 @@ export function choiceCp(
 export const w = (x: Num): string => texNum(fmtWork(F(x)));
 /** In brackets when negative: "(−3)". For substituting into a formula. */
 export const pw = (x: Num): string => (F(x).n < 0 ? `(${w(x)})` : w(x));
+/** Exact when short (≤ 4 places), else rounded to dp places: for answers like 25.80375. */
+export const wn = (x: Num, dp = 2): string => (places(x) <= 4 ? w(x) : wr(x, dp));
 /** Rounded to dp places for display. */
 export const wr = (x: Num, dp: number): string => texNum(showNum(F(x), dp));
 

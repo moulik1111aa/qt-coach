@@ -2,8 +2,9 @@
 
 import type { Chapter, Generator, Mcq, PaperQuestion, Topic } from './types.ts';
 import { ch02 } from './ch02/index.ts';
+import { ch03 } from './ch03/index.ts';
 
-export const CHAPTERS: Chapter[] = [ch02];
+export const CHAPTERS: Chapter[] = [ch02, ch03];
 
 const topics = new Map<string, Topic>();
 const gens = new Map<string, Generator>();

@@ -22,7 +22,7 @@ export function fr(n: number, d = 1): Frac {
   if (d === 0) throw new Error('fraction with zero denominator');
   if (d < 0) [n, d] = [-n, -d];
   const g = gcd(n, d);
-  const out = { n: n / g, d: d / g };
+  const out = { n: n / g || 0, d: d / g };
   if (!Number.isSafeInteger(out.n) || !Number.isSafeInteger(out.d)) throw new Error('fraction overflow');
   return out;
 }

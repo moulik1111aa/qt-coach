@@ -50,7 +50,16 @@ function matHtml(t: MatTerm): string {
   let lines = '';
   for (const m of t.marks ?? []) {
     const tone = m.tone ? ` tone-${m.tone}` : '';
-    if (m.type === 'row' || m.type === 'strike-row') {
+    if (m.type === 'strike-row' && m.j !== undefined) {
+      // Grey out the row but leave the element at (i, j) visible.
+      const r = (m.i ?? 0) + 1;
+      if (m.j > 0) marks += `<span class="bd-mark ${m.type}" style="grid-row:${r};grid-column:1 / ${m.j + 1}"${timed(m)}></span>`;
+      if (m.j < cols - 1) marks += `<span class="bd-mark ${m.type}" style="grid-row:${r};grid-column:${m.j + 2} / -1"${timed(m)}></span>`;
+    } else if (m.type === 'strike-col' && m.i !== undefined) {
+      const c = (m.j ?? 0) + 1;
+      if (m.i > 0) marks += `<span class="bd-mark ${m.type}" style="grid-column:${c};grid-row:1 / ${m.i + 1}"${timed(m)}></span>`;
+      if (m.i < rows - 1) marks += `<span class="bd-mark ${m.type}" style="grid-column:${c};grid-row:${m.i + 2} / -1"${timed(m)}></span>`;
+    } else if (m.type === 'row' || m.type === 'strike-row') {
       marks += `<span class="bd-mark ${m.type}${tone}" style="grid-row:${(m.i ?? 0) + 1};grid-column:1 / -1"${timed(m)}></span>`;
     } else if (m.type === 'col' || m.type === 'strike-col') {
       marks += `<span class="bd-mark ${m.type}${tone}" style="grid-column:${(m.j ?? 0) + 1};grid-row:1 / -1"${timed(m)}></span>`;

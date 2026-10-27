@@ -3,7 +3,7 @@
 
 import { add, F, M, matAdd, matMul, matScale, mul, sub, transpose, type Num } from '../../core/num.ts';
 import type { Lesson, MatsBoard, Mark, Step } from '../../teach/types.ts';
-import { cellsOf, choiceCp, matCp, numCp, pw, texMat, w } from '../kit.ts';
+import { cellsOf, choiceCp, dpFor, matCp, numCp, pw, texMat, w, wn } from '../kit.ts';
 import type { Checkpoint, Level, PaperQuestion, Source } from '../types.ts';
 
 export interface Meta {
@@ -325,6 +325,8 @@ export function mulQ(meta: Meta, a: Num[][], b: Num[][], names: [string, string]
   const [n2, p] = [B.length, B[0].length];
   if (n !== n2) throw new Error(`${meta.id}: not conformable`);
   const C = matMul(A, B);
+  const resDp = Math.min(3, Math.max(0, ...C.flat().map(dpFor)));
+  const Cshow = C.map((r) => r.map((x) => wn(x, resDp)));
   const steps: Step[] = [
     {
       say: `Check the sizes: $${na}$ is $${m} \\times ${n}$ and $${nb}$ is $${n2} \\times ${p}$. The inner numbers match (${n} = ${n2}), so $${na}${nb}$ exists. Its size is the outer numbers: $${m} \\times ${p}$.`,
@@ -339,7 +341,7 @@ export function mulQ(meta: Meta, a: Num[][], b: Num[][], names: [string, string]
     const s = steps.length;
     const work = Array.from({ length: p }, (_, j) => {
       const terms = Array.from({ length: n }, (_, k) => `${pw(A[i][k])} \\times ${pw(B[k][j])}`).join(' + ');
-      return `c_{${i + 1}${j + 1}} = ${terms} = ${w(C[i][j])}`;
+      return `c_{${i + 1}${j + 1}} = ${terms} = ${wn(C[i][j], resDp)}`;
     });
     steps.push({
       say: `Row ${i + 1} of $${na}$ times each column of $${nb}$: multiply the pairs in order, then **add**.`,
@@ -350,7 +352,7 @@ export function mulQ(meta: Meta, a: Num[][], b: Num[][], names: [string, string]
     marksC.push({ type: 'row', i, at: s, hl: s, until: s + 1 });
   }
   if (p === 1) marksB.push({ type: 'col', j: 0, at: 1, hl: 1, until: m + 1, tone: 'b' });
-  steps.push({ say: meta.meaning ? 'Put the rows together.' : 'Put the rows together. So the product is:', math: [`${na}${nb} = ${texMat(C)}`], after: meta.meaning, end: true });
+  steps.push({ say: meta.meaning ? 'Put the rows together.' : 'Put the rows together. So the product is:', math: [`${na}${nb} = ${texMat(Cshow)}`], after: meta.meaning, end: true });
 
   const elementwise = m === n2 && n === p ? A.map((r, i) => r.map((x, j) => mul(x, B[i]?.[j] ?? 0))) : null;
   const reversed = p === m ? (() => {
@@ -373,7 +375,7 @@ export function mulQ(meta: Meta, a: Num[][], b: Num[][], names: [string, string]
       { kind: 'op', text: '\\times' },
       { kind: 'mat', br: 'paren', cells: cellsOf(b), marks: marksB },
       { kind: 'op', text: '=' },
-      { kind: 'mat', br: 'paren', cells: cellsOf(C), fill: fills, marks: marksC },
+      { kind: 'mat', br: 'paren', cells: Cshow, fill: fills, marks: marksC },
     ],
   };
   const sizes = new Set([`${m} × ${p}`, `${n} × ${n2}`, `${p} × ${m}`, `${m} × ${n}`, `${n2} × ${p}`, `${m + 1} × ${p}`]);
@@ -396,7 +398,7 @@ export function mulQ(meta: Meta, a: Num[][], b: Num[][], names: [string, string]
           [A[0].reduce((s, x, k) => add(s, mul(x, B[0][k] ?? 0)), F(0)), 'Row 1 of the second matrix was used. Use its **column** 1.'],
         ],
       }),
-      matCp('res', `$${na}${nb}$`, `The product $${na}${nb}$`, C, steps.length - 1, { slips }),
+      matCp('res', `$${na}${nb}$`, `The product $${na}${nb}$`, C, steps.length - 1, { slips, dp: resDp }),
     );
   }
   return q(
