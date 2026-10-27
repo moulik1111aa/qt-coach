@@ -183,3 +183,38 @@ export function answerShown(a: Answer): string[] {
   if (a.kind === 'choice') return [a.v];
   return a.v.flat().map((x) => showNum(x, a.dp));
 }
+
+/** An MCQ asking for one element of a matrix answer (the question's last checkpoint). */
+export function elementMcq(q: PaperQuestion, rng: Rng, resultName: string): Mcq {
+  const res = q.checkpoints[q.checkpoints.length - 1];
+  if (res.answer.kind !== 'matrix') return mcqFrom(q, rng);
+  const v = res.answer.v;
+  const i = rng.int(0, v.length - 1);
+  const j = rng.int(0, v[0].length - 1);
+  const one: PaperQuestion = {
+    ...q,
+    id: `${q.id}:e${i}${j}`,
+    checkpoints: [
+      {
+        id: 'el',
+        label: '',
+        ask: '',
+        answer: { kind: 'num', v: v[i][j], dp: res.answer.dp },
+        slips: (res.slips ?? []).map((s) => ({ v: s.v.split(';')[i]?.split(',')[j] ?? '', note: s.note })).filter((s) => s.v),
+        step: q.lesson.steps.length - 1,
+      },
+    ],
+  };
+  return mcqFrom(one, rng, `${q.prompt.replace(/\s*Find [^.]*\.\s*$/, '')} In $${resultName}$, what is the element in row ${i + 1}, column ${j + 1}?`.trim());
+}
+
+/** A one-off question whose working is written by hand around computed values. */
+export function customQ(
+  meta: { id: string; topic: string; level: Level; source: PaperQuestion['source']; title: string; page?: number; bookNote?: string },
+  prompt: string,
+  checkpoints: Checkpoint[],
+  lesson: import('../teach/types.ts').Lesson,
+  data?: import('../teach/types.ts').Board,
+): PaperQuestion {
+  return { ...meta, prompt, checkpoints, lesson, data };
+}

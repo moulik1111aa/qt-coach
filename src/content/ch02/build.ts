@@ -428,7 +428,7 @@ export function existsQ(meta: Meta, sa: [number, number], sb: [number, number], 
     },
     ok
       ? { say: `Its size is the outer numbers.`, math: [`${na}${nb} \\text{ is } ${sa[0]} \\times ${sb[1]}`], end: true }
-      : { say: 'So the answer is: $AB$ does not exist.'.replace('$AB$', `$${na}${nb}$`), end: true },
+      : { say: `So the answer is **No**: $${na}${nb}$ does not exist.`, end: true },
   ];
   const cps: Checkpoint[] = [
     choiceCp('ex', `Does $${na}${nb}$ exist?`, `Does $${na}${nb}$ exist?`, ['Yes', 'No'], ok ? 'Yes' : 'No', 1, [
@@ -443,3 +443,116 @@ export function existsQ(meta: Meta, sa: [number, number], sb: [number, number], 
   return q(meta, `$${na}$ is a $${sa[0]} \\times ${sa[1]}$ matrix and $${nb}$ is a $${sb[0]} \\times ${sb[1]}$ matrix. Does $${na}${nb}$ exist? If it does, what is its size?`, undefined, cps, { steps });
 }
 
+
+// ---------------------------------------------------------------------------------------------
+// Types of matrices
+
+export type MType = 'row' | 'column' | 'square' | 'diagonal' | 'scalar' | 'identity' | 'upper' | 'lower' | 'symmetric' | 'skew';
+export const TYPE_NAME: Record<MType, string> = {
+  row: 'Row matrix',
+  column: 'Column matrix',
+  square: 'Square matrix',
+  diagonal: 'Diagonal matrix',
+  scalar: 'Scalar matrix',
+  identity: 'Identity matrix',
+  upper: 'Upper triangular matrix',
+  lower: 'Lower triangular matrix',
+  symmetric: 'Symmetric matrix',
+  skew: 'Skew-symmetric matrix',
+};
+
+/** Every type name that is true of a matrix. */
+export function typesOf(a: Num[][]): Set<MType> {
+  const A = M(a);
+  const m = A.length;
+  const n = A[0].length;
+  const z = (x: Num) => F(x).n === 0;
+  const out = new Set<MType>();
+  if (m === 1 && n > 1) out.add('row');
+  if (n === 1 && m > 1) out.add('column');
+  if (m !== n || m < 2) return out;
+  out.add('square');
+  let below = true;
+  let above = true;
+  let sym = true;
+  let skew = true;
+  for (let i = 0; i < m; i++)
+    for (let j = 0; j < n; j++) {
+      if (i > j && !z(A[i][j])) below = false;
+      if (i < j && !z(A[i][j])) above = false;
+      if (F(sub(A[i][j], A[j][i])).n !== 0) sym = false;
+      if (F(add(A[i][j], A[j][i])).n !== 0) skew = false;
+    }
+  if (below) out.add('upper');
+  if (above) out.add('lower');
+  if (sym) out.add('symmetric');
+  if (skew) out.add('skew');
+  if (below && above) {
+    out.add('diagonal');
+    const d = A.map((r, i) => r[i]);
+    if (d.every((x) => F(sub(x, d[0])).n === 0)) {
+      out.add('scalar');
+      if (F(d[0]).n === 1 && F(d[0]).d === 1) out.add('identity');
+    }
+  }
+  return out;
+}
+
+/** The most exact name, in the order the book's definitions narrow down. */
+export function bestType(t: Set<MType>): MType | null {
+  for (const k of ['identity', 'scalar', 'diagonal', 'upper', 'lower', 'skew', 'symmetric', 'row', 'column', 'square'] as MType[]) if (t.has(k)) return k;
+  return null;
+}
+
+const WHY: Record<MType, string> = {
+  row: 'It has a **single row**.',
+  column: 'It has a **single column**.',
+  square: 'It has as many rows as columns, and none of the special patterns below applies.',
+  diagonal: 'Every element **off** the main diagonal is zero.',
+  scalar: 'It is diagonal, and all the diagonal elements are **equal**.',
+  identity: 'It is diagonal, and every diagonal element is **1**.',
+  upper: 'Every element **below** the main diagonal is zero.',
+  lower: 'Every element **above** the main diagonal is zero.',
+  symmetric: 'Each element equals its mirror image across the diagonal: $a_{ij} = a_{ji}$.',
+  skew: 'Each element is the **negative** of its mirror image, $a_{ij} = -a_{ji}$, and the diagonal is all zeros.',
+};
+
+export function typeQ(meta: Meta, a: Num[][], name: string, rng?: { shuffle<T>(x: T[]): T[] }): PaperQuestion {
+  const t = typesOf(a);
+  const best = bestType(t);
+  if (!best) throw new Error(`${meta.id}: no type`);
+  const m = a.length;
+  const n = a[0].length;
+  const square = m === n;
+  const falseTypes = (Object.keys(TYPE_NAME) as MType[]).filter((k) => !t.has(k));
+  const pickFrom = rng ? rng.shuffle([...falseTypes]) : falseTypes;
+  const options = [best, ...pickFrom.slice(0, 3)].map((k) => TYPE_NAME[k]).sort();
+  const also = [...t].filter((k) => k !== best && k !== 'square');
+  const diagMarks: Mark[] = square ? Array.from({ length: m }, (_, i): Mark => ({ type: 'cell', i, j: i, at: 1, hl: 1 })) : [];
+  const steps: Step[] = [
+    {
+      say: square
+        ? `Count rows and columns: $${m} \\times ${n}$. They are equal, so it is a **square** matrix. Now look for a pattern.`
+        : `Count rows and columns: $${m} \\times ${n}$. They are not equal, so it is **not square**.`,
+    },
+    square
+      ? { say: `Look at the **main diagonal** (top left to bottom right) and at the elements above and below it. ${WHY[best]}` }
+      : { say: WHY[best] },
+    {
+      say: `So the most exact name is: **${TYPE_NAME[best]}**.`,
+      after: also.length ? `It is also ${also.map((k) => TYPE_NAME[k].toLowerCase()).join(', ')}${square ? ', and square' : ''}, but "${TYPE_NAME[best].toLowerCase()}" says the most.` : undefined,
+      end: true,
+    },
+  ];
+  const cps: Checkpoint[] = [
+    choiceCp('sq', 'Square?', 'Is it a square matrix?', ['Yes', 'No'], square ? 'Yes' : 'No', 0, [[square ? 'No' : 'Yes', 'Square means rows = columns. Count both.']]),
+    choiceCp('type', 'Type', 'Which name describes it most exactly?', options, TYPE_NAME[best], 2),
+  ];
+  return q(
+    meta,
+    `What type of matrix is $${name}$?`,
+    { kind: 'mats', terms: [{ kind: 'mat', name: `$${name} =$`, br: 'paren', cells: cellsOf(a) }] },
+    cps,
+    { board: { kind: 'mats', terms: [{ kind: 'mat', name: `$${name} =$`, br: 'paren', cells: cellsOf(a), marks: diagMarks }] }, steps },
+  );
+}

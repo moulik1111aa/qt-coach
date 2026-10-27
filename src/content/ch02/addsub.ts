@@ -1,7 +1,7 @@
 // Unit 2 · Addition and subtraction of matrices (book pp. 3–4 of the unit).
 
 import type { Rng } from '../../core/rng.ts';
-import { mcq, mcqFrom } from '../kit.ts';
+import { elementMcq, mcq } from '../kit.ts';
 import type { Generator, Topic } from '../types.ts';
 import { addSubQ, comboQ } from './build.ts';
 
@@ -32,28 +32,7 @@ const gen: Generator = {
   },
   mcq(rng, level) {
     const q = this.make(rng, level);
-    // Ask for one element of the answer, as a number.
-    const res = q.checkpoints[q.checkpoints.length - 1];
-    if (res.answer.kind !== 'matrix') throw new Error('expected a matrix');
-    const v = res.answer.v;
-    const i = rng.int(0, v.length - 1);
-    const j = rng.int(0, v[0].length - 1);
-    const name = q.prompt.match(/\$(A [+-] B)\$/)?.[1] ?? 'A + B';
-    const fake = {
-      ...q,
-      id: `${q.id}:e${i}${j}`,
-      checkpoints: [
-        {
-          id: 'el',
-          label: '',
-          ask: '',
-          answer: { kind: 'num' as const, v: v[i][j], dp: 0 },
-          slips: (res.slips ?? []).map((s) => ({ v: s.v.split(';')[i].split(',')[j], note: s.note })),
-          step: q.lesson.steps.length - 1,
-        },
-      ],
-    };
-    return mcqFrom(fake, rng, `${q.prompt.replace(/Find .*$/, '')}In $${name}$, what is the element in row ${i + 1}, column ${j + 1}?`);
+    return elementMcq(q, rng, q.prompt.match(/\$(A [+-] B)\$/)?.[1] ?? 'A + B');
   },
 };
 

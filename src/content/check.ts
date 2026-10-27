@@ -19,7 +19,7 @@ const BAD = /undefined|NaN|\[object |Infinity/;
 
 /** Normalise text for "does the last step state the answer". */
 const norm = (s: string) =>
-  s.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2').replace(/−/g, '-').replace(/\\,/g, '').replace(/[\s,{}$]/g, '').replace(/\\text/g, '');
+  s.replace(/\\times/g, '×').replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g, '$1/$2').replace(/−/g, '-').replace(/\\,/g, '').replace(/[\s,{}$]/g, '').replace(/\\text/g, '');
 
 function boardSteps(b: Board): number[] {
   const out: number[] = [];
