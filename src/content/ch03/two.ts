@@ -47,7 +47,7 @@ export const two: Topic = {
   blurb: '2 × 2 determinants; Cramer’s rule for two unknowns',
   kind: 'numeric',
   pages: [1, 2, 3],
-  primers: ['p-lineq'],
+  primers: ['p-signs', 'p-lineq'],
   cards: [
     {
       id: 'what',

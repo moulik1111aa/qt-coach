@@ -98,6 +98,7 @@ export const apps: Topic = {
   blurb: 'Machine mix (ONGC) and brand switching',
   kind: 'numeric',
   pages: [5, 6, 7],
+  primers: ['p-round'],
   cards: [
     {
       id: 'why',

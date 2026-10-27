@@ -43,6 +43,7 @@ export const scalar: Topic = {
   blurb: 'Multiply every element by the same number',
   kind: 'numeric',
   pages: [4],
+  primers: ['p-signs', 'p-round'],
   cards: [
     {
       id: 'rule',

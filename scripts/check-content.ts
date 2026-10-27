@@ -1,12 +1,13 @@
 // Content checks for the whole course (spec §10). Fails the build on any problem.
 //   node scripts/check-content.ts [--seeds N]
 import { CHAPTERS } from '../src/content/index.ts';
+import { PRIMERS } from '../src/content/primers/index.ts';
 import { checkCourse } from '../src/content/check.ts';
 
 const i = process.argv.indexOf('--seeds');
 const seeds = i > 0 ? Number(process.argv[i + 1]) : 2000;
 const t0 = performance.now();
-const problems = checkCourse(CHAPTERS, seeds);
+const problems = checkCourse(CHAPTERS, seeds, PRIMERS);
 const topics = CHAPTERS.flatMap((c) => c.topics);
 const qs = topics.reduce((n, t) => n + t.examples.length + t.paper.length, 0);
 const mcqs = topics.reduce((n, t) => n + t.mcqs.length, 0);

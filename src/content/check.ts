@@ -8,7 +8,7 @@ import { gradeAnswer } from '../core/grade.ts';
 import { mathHtml, richHtml } from '../ui/math.ts';
 import { STEP_KEYS, type Board, type Lesson } from '../teach/types.ts';
 import { answerShown } from './kit.ts';
-import { LEVELS, type Chapter, type Generator, type Mcq, type PaperQuestion, type Topic } from './types.ts';
+import { LEVELS, type Card, type Chapter, type Generator, type Mcq, type PaperQuestion, type Primer, type Topic } from './types.ts';
 
 export interface Problem {
   where: string;
@@ -143,11 +143,9 @@ export function checkGenerator(g: Generator, seeds: number, out: Problem[]): voi
   }
 }
 
-/** Minimum content per topic (spec §4.2). */
-export function checkTopic(t: Topic, out: Problem[]): void {
-  const where = t.id;
-  if (!t.cards.length) out.push({ where, issue: 'no Learn cards' });
-  for (const c of t.cards) {
+/** Every Learn card renders and contains no undefined/NaN. */
+export function checkCards(where: string, cards: Card[], out: Problem[]): void {
+  for (const c of cards) {
     renders(`${where}/${c.id} title`, c.title, false, out);
     for (const b of c.body) {
       if ('math' in b) renders(`${where}/${c.id}`, b.math, true, out);
@@ -161,6 +159,13 @@ export function checkTopic(t: Topic, out: Problem[]): void {
       } else renders(`${where}/${c.id}`, Object.values(b)[0] as string, false, out);
     }
   }
+}
+
+/** Minimum content per topic (spec §4.2). */
+export function checkTopic(t: Topic, out: Problem[]): void {
+  const where = t.id;
+  if (!t.cards.length) out.push({ where, issue: 'no Learn cards' });
+  checkCards(where, t.cards, out);
   const mcqs = t.mcqs.length;
   if (t.kind === 'theory') {
     if (mcqs < 15) out.push({ where, issue: `${mcqs} MCQs (theory needs 15)` });
@@ -184,8 +189,15 @@ export function checkTopic(t: Topic, out: Problem[]): void {
 }
 
 /** Check a whole course. */
-export function checkCourse(chapters: Chapter[], seeds: number): Problem[] {
+export function checkCourse(chapters: Chapter[], seeds: number, primers: Primer[] = []): Problem[] {
   const out: Problem[] = [];
+  for (const p of primers) {
+    renders(`${p.id} title`, p.title, false, out);
+    checkCards(p.id, p.cards, out);
+    if (p.practice.length < 5) out.push({ where: p.id, issue: 'fewer than 5 practice questions' });
+    p.practice.forEach((m) => checkMcq(m, out));
+  }
+  for (const ch of chapters) for (const t of ch.topics) for (const pid of t.primers ?? []) if (!primers.some((p) => p.id === pid)) out.push({ where: t.id, issue: `unknown primer ${pid}` });
   const ids = new Set<string>();
   const unique = (id: string) => {
     if (ids.has(id)) out.push({ where: id, issue: 'duplicate id' });

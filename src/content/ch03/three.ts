@@ -43,6 +43,7 @@ export const three: Topic = {
   blurb: 'Minors, cofactors and expanding along the first row',
   kind: 'numeric',
   pages: [3, 4],
+  primers: ['p-signs'],
   cards: [
     {
       id: 'rule',

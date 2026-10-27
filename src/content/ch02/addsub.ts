@@ -46,6 +46,7 @@ export const addsub: Topic = {
   blurb: 'Same size only; work element by element',
   kind: 'numeric',
   pages: [3, 4],
+  primers: ['p-signs'],
   cards: [
     {
       id: 'rule',

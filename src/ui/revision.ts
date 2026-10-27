@@ -24,7 +24,7 @@ export function formulaScreen(ch: Chapter): (app: App) => Screen {
 export function revisionScreen(kind: 'formulas' | 'mistakes'): (app: App) => Screen {
   return (app) => {
     if (kind === 'formulas') {
-      const el = h(`<div class="pg"><main class="revision"><h1>Formula sheets</h1><ol class="contents ruled">${CHAPTERS.map(
+      const el = h(`<div class="pg"><main class="revision"><h1>Formula sheets</h1><ol class="contents ruled">${CHAPTERS.filter((c) => c.formulas.length).map(
         (c) => `<li class="toc"><button data-ch="${c.n}"><span class="cp-n">${c.unit}</span><span class="toc-body"><span class="toc-t">${escapeHtml(c.title)}</span><span class="toc-s muted">${c.formulas.length} formulas</span></span></button></li>`,
       ).join('')}</ol></main></div>`);
       el.prepend(bar(app, 'Revision', 'Formula sheets'));

@@ -53,7 +53,7 @@ export function chapterScreen(ch: Chapter): (app: App) => Screen {
       list.querySelectorAll<HTMLElement>('[data-t]').forEach((b) => b.addEventListener('click', () => app.push(topicScreen(ch.topics[Number(b.dataset.t)]))));
     };
     const more = el.querySelector<HTMLElement>('.ch-more')!;
-    more.append(button('Formula sheet', 'line wide', () => app.push(formulaScreen(ch))));
+    if (ch.formulas.length) more.append(button('Formula sheet', 'line wide', () => app.push(formulaScreen(ch))));
     draw();
     return { el, resumed: draw };
   };
