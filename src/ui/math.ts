@@ -192,6 +192,7 @@ function render(src: string): string {
         }
       } else {
         // Unknown command: show its name upright so mistakes are visible, never silently dropped.
+        UNKNOWN_COMMANDS.add(cmd);
         atom(`<span class="mtext">${esc(cmd)}</span>`);
       }
       scripts();
@@ -275,17 +276,31 @@ export function mathBlock(src: string): string {
  * The app's text markup: **bold**, $inline maths$, and line breaks. Everything else is escaped.
  * A literal dollar (rupees are written ₹) is never needed.
  */
+/** Commands the renderer did not know (the content checker reports them). */
+export const UNKNOWN_COMMANDS = new Set<string>();
+
 export function richHtml(text: string): string {
   const parts = text.split('$');
   if (parts.length % 2 === 0) throw new Error(`unbalanced $ in: ${text}`);
-  return parts
-    .map((part, i) => {
-      if (i % 2 === 1) return mathHtml(part);
-      return esc(part)
-        .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
-        .replace(/\n/g, '<br>');
-    })
-    .join('');
+  // Bold may span inline maths ("**Step 1. Make $D$.**"), so its state carries across the parts.
+  let bold = false;
+  let out = '';
+  parts.forEach((part, i) => {
+    if (i % 2 === 1) {
+      out += mathHtml(part);
+      return;
+    }
+    esc(part)
+      .split('**')
+      .forEach((seg, k) => {
+        if (k > 0) {
+          out += bold ? '</b>' : '<b>';
+          bold = !bold;
+        }
+        out += seg.replace(/\n/g, '<br>');
+      });
+  });
+  return bold ? `${out}</b>` : out;
 }
 
 /** Plain words for reading aloud (maths spoken simply). */

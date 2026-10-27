@@ -31,6 +31,8 @@ export interface Card {
   body: Block[];
   /** Book page (as printed in the unit) for cross-checking. */
   page?: number;
+  /** Extra depth (e.g. the book's derivation) that can be skipped; placed after the required cards. */
+  optional?: boolean;
 }
 
 /** How a checkpoint answer is entered and graded. */

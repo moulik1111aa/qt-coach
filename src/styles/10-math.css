@@ -89,3 +89,9 @@
 .mmat.br-bar::before, .mmat.br-bar::after { width: 0; border-width: 0 0 0 1.4px; }
 .mmat.br-bar::after { border-width: 0 1.4px 0 0; }
 .mcell { display: inline-flex; align-items: center; min-width: 0.6em; justify-content: center; }
+
+/* A long line of working broken at its "=" signs (see fit.ts). */
+.mblock.msplit { flex-direction: column; align-items: flex-start; }
+.mline { display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap; }
+.mline.cont { padding-left: 1em; margin-top: 0.15em; }
+.mseg { display: inline-flex; align-items: center; flex-wrap: nowrap; }

@@ -121,3 +121,5 @@
 .bd-line.lit { background: var(--marker); }
 .bd-line.tn-good { color: var(--green); font-weight: 700; }
 .bd-line.tn-key { font-weight: 700; }
+/* A board too wide for the screen wraps: "A + B" on one line, "= C" on the next (see fitBoards). */
+.bd-mats.wrap { flex-wrap: wrap; row-gap: 10px; width: 100%; min-width: 0; }

@@ -42,14 +42,20 @@ async function solveClean(page: Page): Promise<void> {
   await expect(page.locator('.summary')).toBeVisible();
 }
 
+/** Page through the Learn cards until the last required one, then finish. */
+async function readAllCards(page: import('@playwright/test').Page): Promise<void> {
+  const done = page.locator('.learn-foot >> text=Done: on to worked examples');
+  for (let i = 0; i < 20 && !(await done.isVisible()); i++) await page.click('.learn-foot >> text=Next');
+  await done.click();
+}
+
 test('first run, contents, and a topic from Learn to worked examples', async ({ page }) => {
   await start(page);
   await expect(page.locator('.toc')).toHaveCount(9);
   await openTopic(page, 2, 2); // Matrices · addition and subtraction
   await expect(page.locator('.topic h1')).toHaveText('Addition and subtraction');
   await page.click('[data-stage="learn"]');
-  for (let i = 0; i < 3; i++) await page.click('.learn-foot >> text=Next');
-  await page.click('.learn-foot >> text=Done: on to worked examples');
+  await readAllCards(page);
   await expect(page.locator('.stage').first()).toHaveClass(/done/);
   await page.click('[data-stage="examples"]');
   await page.click('[data-e="0"]');
@@ -126,8 +132,7 @@ test('progress survives a reload', async ({ page }) => {
   await start(page);
   await openTopic(page, 2, 2);
   await page.click('[data-stage="learn"]');
-  for (let i = 0; i < 3; i++) await page.click('.learn-foot >> text=Next');
-  await page.click('.learn-foot >> text=Done: on to worked examples');
+  await readAllCards(page);
   await page.reload();
   await expect(page.locator('.home')).toBeVisible();
   await expect(page.locator('.continue')).toContainText('Addition and subtraction');

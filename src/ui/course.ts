@@ -183,11 +183,20 @@ export function learnScreen(o: LearnOpts): (app: App) => Screen {
     el.prepend(bar(app, o.kicker, o.title));
     const main = el.querySelector<HTMLElement>('.learn')!;
     const foot = el.querySelector<HTMLElement>('.learn-foot')!;
+    const lastRequired = Math.max(0, ...o.cards.map((c, k) => (c.optional ? -1 : k)));
+    const optionalCount = o.cards.filter((c) => c.optional).length;
+    const finish = () => {
+      o.onDone?.();
+      if (o.practice?.length) app.replace(checkScreen(null, { title: o.title, items: o.practice }));
+      else app.pop();
+    };
     const draw = () => {
       const c = o.cards[i];
       o.onCard?.(i);
+      if (i === lastRequired) o.onDone?.();
       main.innerHTML = `<div class="card-count faint small">${i + 1} of ${o.cards.length}${c.page ? `<span>Book page ${c.page}</span>` : ''}</div>
-        <div class="dots" aria-hidden="true">${o.cards.map((_, k) => `<i class="${k < i ? 'seen' : k === i ? 'on' : ''}"></i>`).join('')}</div>
+        <div class="dots" aria-hidden="true">${o.cards.map((cc, k) => `<i class="${k < i ? 'seen' : k === i ? 'on' : ''}${cc.optional ? ' opt-dot' : ''}"></i>`).join('')}</div>
+        ${c.optional ? '<p class="opt-tag">Optional: you can skip this card.</p>' : ''}
         <article class="card"><h1>${richHtml(c.title)}</h1>${c.body.map(blockHtml).join('')}</article>`;
       main.querySelectorAll<HTMLElement>('.board').forEach((b) => setBoardStep(b, Infinity));
       fitBoards(main);
@@ -195,15 +204,17 @@ export function learnScreen(o: LearnOpts): (app: App) => Screen {
       foot.replaceChildren();
       const row = h('<div class="foot-row"></div>');
       if (i > 0) row.append(button('Back', 'line', () => ((i -= 1), draw(), window.scrollTo(0, 0))));
+      const doneLabel = o.practice?.length ? 'Practise' : (o.nextLabel ?? 'Done');
+      if (i === lastRequired && optionalCount) {
+        row.append(button(doneLabel, 'solid', finish));
+        foot.append(row);
+        const more = h(`<button class="link more-opt" type="button">Read ${optionalCount === 1 ? 'the optional card' : `the ${optionalCount} optional cards`}</button>`);
+        more.addEventListener('click', () => ((i += 1), draw(), window.scrollTo(0, 0)));
+        foot.append(more);
+        return;
+      }
       if (i < o.cards.length - 1) row.append(button('Next', 'solid', () => ((i += 1), draw(), window.scrollTo(0, 0))));
-      else
-        row.append(
-          button(o.practice?.length ? 'Practise' : (o.nextLabel ?? 'Done'), 'solid', () => {
-            o.onDone?.();
-            if (o.practice?.length) app.replace(checkScreen(null, { title: o.title, items: o.practice }));
-            else app.pop();
-          }),
-        );
+      else row.append(button(doneLabel, 'solid', finish));
       foot.append(row);
     };
     draw();

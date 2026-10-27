@@ -49,3 +49,9 @@ test('stray dots and unknown commands never throw', () => {
   assert.doesNotThrow(() => mathHtml('a . b'));
   assert.ok(mathHtml('\\foo').includes('foo'));
 });
+
+test('bold can span inline maths', () => {
+  const h = richHtml('**Step 1. Make $D$.** Then divide.');
+  assert.match(h, /^<b>Step 1\. Make <span class="m">.*<\/span>\.<\/b> Then divide\.$/);
+  assert.equal(richHtml('a **b** c'), 'a <b>b</b> c');
+});

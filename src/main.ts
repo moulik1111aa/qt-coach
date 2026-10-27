@@ -4,6 +4,8 @@ import { App } from './ui/app.ts';
 import { nativeBridge, nativeStorage } from './platform/native.ts';
 import { browserStorage } from './storage/save.ts';
 import { firstRunScreen, homeScreen } from './ui/home.ts';
+import { fitMath } from './ui/fit.ts';
+import { fitBoards, setBoardStep } from './ui/boards.ts';
 
 async function boot(): Promise<void> {
   const root = document.getElementById('app')!;
@@ -12,6 +14,8 @@ async function boot(): Promise<void> {
   const debug = /[?&]debug\b/.test(location.search);
   const app = new App(root, storage, native, debug);
   (globalThis as { __app?: App }).__app = app;
+  // Tests measure maths layout with the app's own fitting.
+  if (debug) Object.assign(globalThis, { __fitMath: fitMath, __fitBoards: fitBoards, __setBoardStep: setBoardStep });
   app.reset(app.save.data.started ? homeScreen : firstRunScreen);
 }
 

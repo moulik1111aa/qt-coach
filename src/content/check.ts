@@ -5,7 +5,7 @@
 
 import { createRng, subSeed } from '../core/rng.ts';
 import { gradeAnswer } from '../core/grade.ts';
-import { mathHtml, richHtml } from '../ui/math.ts';
+import { mathHtml, richHtml, UNKNOWN_COMMANDS } from '../ui/math.ts';
 import { STEP_KEYS, type Board, type Lesson } from '../teach/types.ts';
 import { answerShown } from './kit.ts';
 import { LEVELS, type Card, type Chapter, type Generator, type Mcq, type PaperQuestion, type Primer, type Topic } from './types.ts';
@@ -43,8 +43,10 @@ function renders(where: string, text: string | undefined, maths: boolean, out: P
   if (text === undefined) return;
   if (BAD.test(text)) out.push({ where, issue: `bad text: ${text.slice(0, 80)}` });
   try {
+    UNKNOWN_COMMANDS.clear();
     if (maths) mathHtml(text);
     else richHtml(text);
+    if (UNKNOWN_COMMANDS.size) out.push({ where, issue: `unknown maths command: \\${[...UNKNOWN_COMMANDS].join(', \\')}` });
   } catch (e) {
     out.push({ where, issue: `markup: ${(e as Error).message}` });
   }
@@ -165,6 +167,12 @@ export function checkCards(where: string, cards: Card[], out: Problem[]): void {
 export function checkTopic(t: Topic, out: Problem[]): void {
   const where = t.id;
   if (!t.cards.length) out.push({ where, issue: 'no Learn cards' });
+  // Plain-language standard: open with why it matters to a manager; end with the method in steps
+  // (numeric) or how to write it in the exam (theory); optional depth only after the required cards.
+  if (t.cards[0]?.id !== 'why') out.push({ where, issue: 'first Learn card must be the "why a manager needs this" card (id why)' });
+  if (!t.cards.some((c) => c.id === (t.kind === 'theory' ? 'exam' : 'recipe'))) out.push({ where, issue: t.kind === 'theory' ? 'no "writing it in the exam" card (id exam)' : 'no method-in-steps card (id recipe)' });
+  const firstOpt = t.cards.findIndex((c) => c.optional);
+  if (firstOpt >= 0 && t.cards.slice(firstOpt).some((c) => !c.optional)) out.push({ where, issue: 'optional cards must come after all required cards' });
   checkCards(where, t.cards, out);
   const mcqs = t.mcqs.length;
   if (t.kind === 'theory') {

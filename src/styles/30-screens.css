@@ -189,6 +189,9 @@ h2.sec { font-size: 1em; color: var(--ink-2); font-weight: 600; margin: 26px 0 0
 .dots i { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); }
 .dots i.seen { background: var(--ink-3); }
 .dots i.on { background: var(--blue); }
+.dots i.opt-dot { opacity: 0.45; }
+.opt-tag { margin: 0 0 8px; font-size: 0.86em; color: var(--ink-2); padding: 6px 10px; border-radius: 8px; background: var(--rule); display: inline-block; }
+.more-opt { display: block; margin: 8px auto 0; }
 .card h1 { font-size: 1.45em; margin-bottom: 14px; }
 .card p { max-width: 62ch; }
 .card .mblock { overflow-x: auto; max-width: 100%; padding: 4px 0; }

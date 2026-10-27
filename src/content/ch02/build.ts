@@ -22,6 +22,18 @@ export interface Meta {
 }
 
 const ROW = ['first', 'second', 'third', 'fourth'];
+const ROW_NAME = (i: number, rows: number) => (rows === 1 ? 'The row' : i === 0 ? 'Top row' : i === rows - 1 ? 'Bottom row' : `${cap(ROW[i] ?? `row ${i + 1}`)} row`);
+
+/** A one-line reminder for the first sign trap in a list of (x op y) sums, if there is one. */
+export function signHint(work: [Num, '+' | '-', Num][]): string | undefined {
+  const neg = (x: Num) => F(x).n < 0;
+  for (const [x, op, y] of work) {
+    if (op === '-' && neg(y)) return `Taking away a minus number is the same as adding it: $${pw(x)} - ${pw(y)} = ${w(x)} + ${w(mul(y, -1))} = ${w(sub(x, y))}$.`;
+    if (op === '+' && neg(y)) return `Adding a minus number is the same as taking it away: $${w(x)} + ${pw(y)} = ${w(x)} - ${w(mul(y, -1))} = ${w(add(x, y))}$.`;
+    if (op === '-' && neg(sub(x, y))) return `Taking away a bigger number takes you below zero: $${pw(x)} - ${pw(y)} = ${w(sub(x, y))}$ (like spending more than you have).`;
+  }
+  return undefined;
+}
 const sizeText = (m: unknown[][]) => `${m.length} \\times ${m[0].length}`;
 const sizeWords = (m: unknown[][]) => `${m.length} × ${m[0].length}`;
 
@@ -69,12 +81,13 @@ export function orderQ(meta: Meta, rows: Num[][], name: string, pick: [number, n
     ],
   };
   const steps: Step[] = [
-    { say: `Count the **rows** (the horizontal lines of numbers). There are ${m}.`, math: [`m = ${m}`] },
-    { say: `Count the **columns** (the vertical lines). There are ${n}.`, math: [`n = ${n}`] },
-    { say: `The order (size) is written **rows × columns**, rows always first.`, math: [`\\text{order} = m \\times n = ${m} \\times ${n}`] },
+    { say: `Count the **rows**: the lines of numbers going **across**. There are ${m}. (The book calls this number $m$.)`, math: [`m = ${m}`] },
+    { say: `Count the **columns**: the lines going **down**. There are ${n}. (The book calls this $n$.)`, math: [`n = ${n}`] },
+    { say: `The order (size) is written **rows × columns**, rows always first.`, math: [`\\text{order} = ${m} \\times ${n}`] },
     {
-      say: `$a_{${sub}}$ means the element in **row ${pi + 1}, column ${pj + 1}**. Go along row ${pi + 1} and down column ${pj + 1}; they meet at ${w(el)}.`,
+      say: `$a_{${sub}}$ is the number at **row ${pi + 1}, column ${pj + 1}** (the small numbers are its address, not something to multiply). Go along row ${pi + 1} and down column ${pj + 1}; they meet at ${w(el)}. So the answer is:`,
       math: [`a_{${sub}} = ${w(el)}`],
+      after: meta.meaning,
       end: true,
     },
   ];
@@ -110,11 +123,18 @@ export function addSubQ(meta: Meta, a: Num[][], b: Num[][], op: '+' | '-', names
       say: `Check the sizes. $${na}$ is $${sizeText(a)}$ and $${nb}$ is $${sizeText(b)}$. Same size, so they can be ${op === '+' ? 'added' : 'subtracted'}, and the answer is also $${sizeText(a)}$.`,
     },
   ];
+  let hinted = false;
   for (let i = 0; i < rows; i++) {
     const work = Array.from({ length: cols }, (_, j) => `${pw(A[i][j])} ${sign} ${pw(B[i][j])} = ${w(C[i][j])}`);
+    const hint = hinted ? undefined : signHint(A[i].map((x, j) => [x, op, B[i][j]]));
+    if (hint) hinted = true;
     steps.push({
-      say: `${cap(ROW[i] ?? `row ${i + 1}`)} row: ${op === '+' ? 'add' : 'subtract'} the elements in the same position${op === '-' ? `, always $${nb}$'s from $${na}$'s` : ''}.`,
+      say:
+        op === '+'
+          ? `${ROW_NAME(i, rows)}: add each number in $${na}$ to the number in the **same place** in $${nb}$.`
+          : `${ROW_NAME(i, rows)}: from each number in $${na}$, take away the number in the **same place** in $${nb}$.`,
       math: work,
+      after: hint,
     });
   }
   const res = `${na} ${sign} ${nb}`;
@@ -185,10 +205,10 @@ export function scalarQ(meta: Meta, k: Num, a: Num[][], name = 'A'): PaperQuesti
   const A = M(a);
   const R = matScale(k, A);
   const rows = A.length;
-  const steps: Step[] = [{ say: `Multiplying a matrix by a number (a **scalar**) multiplies **every element** by it. The size stays $${sizeText(a)}$.` }];
+  const steps: Step[] = [{ say: `Multiplying a matrix by a single number (a **scalar**) is easy: multiply **every number inside** by ${w(k)}, like changing every price on a price list in one go. The size stays $${sizeText(a)}$.` }];
   for (let i = 0; i < rows; i++) {
     steps.push({
-      say: `${cap(ROW[i] ?? `row ${i + 1}`)} row: multiply each element by ${w(k)}.`,
+      say: `${ROW_NAME(i, rows)}: multiply each number by ${w(k)}.`,
       math: A[i].map((x, j) => `${pw(k)} \\times ${pw(x)} = ${w(R[i][j])}`),
     });
   }
@@ -230,12 +250,12 @@ export function comboQ(meta: Meta, k: Num, a: Num[][], l: Num, b: Num[][], names
   const absL = lNeg ? mul(l, -1) : F(l);
   const expr = `${coef(k)}${na} ${lNeg ? '-' : '+'} ${coef(absL)}${nb}`;
   const steps: Step[] = [
-    { say: `First multiply each matrix by its number (scalar multiplication).`, math: [`${coef(k)}${na} = ${texMat(kA)}`] },
-    { say: `Now the second one.`, math: [`${coef(absL)}${nb} = ${texMat(matScale(absL, B))}`] },
+    { say: `Do it in two easy parts. **Part 1:** multiply every number in each matrix by the number in front of it.`, math: [`${coef(k)}${na} = ${texMat(kA)}`] },
+    { say: `Now the second matrix, every number times ${w(absL)}.`, math: [`${coef(absL)}${nb} = ${texMat(matScale(absL, B))}`] },
     {
-      say: `Both are $${sizeText(a)}$, so ${lNeg ? 'subtract' : 'add'} the elements in the same position.`,
-      math: R.slice(0, 1).map((r, i) => r.map((_, j) => `${pw(kA[i][j])} ${lNeg ? '-' : '+'} ${pw(matScale(absL, B)[i][j])} = ${w(R[i][j])}`).join(',\\quad ')),
-      after: 'Do the same for every row.',
+      say: `**Part 2:** both are $${sizeText(a)}$, so ${lNeg ? 'take away' : 'add'} the numbers sitting in the **same place** (top-left with top-left, and so on), row by row.`,
+      math: R.map((r, i) => r.map((_, j) => `${pw(kA[i][j])} ${lNeg ? '-' : '+'} ${pw(matScale(absL, B)[i][j])} = ${w(R[i][j])}`).join(',\\quad ')),
+      after: signHint(R.flatMap((r, i) => r.map((_, j): [Num, '+' | '-', Num] => [kA[i][j], lNeg ? '-' : '+', matScale(absL, B)[i][j]]))),
     },
     { say: meta.meaning ? 'So:' : 'So the answer is:', math: [`${expr} = ${texMat(R)}`], after: meta.meaning, end: true },
   ];
@@ -282,9 +302,9 @@ export function transposeQ(meta: Meta, a: Num[][], name = 'A'): PaperQuestion {
   const A = M(a);
   const T = transpose(A);
   const steps: Step[] = [
-    { say: `$${name}$ is $${sizeText(a)}$, so its transpose $${name}'$ is $${sizeText(T)}$: the rows and columns swap.` },
+    { say: `The **transpose** just turns rows into columns. $${name}$ is $${sizeText(a)}$, so its transpose $${name}'$ is $${sizeText(T)}$. Nothing is calculated; numbers only move.` },
     ...A.map((r, i): Step => ({
-      say: `Row ${i + 1} of $${name}$ becomes **column ${i + 1}** of $${name}'$.`,
+      say: `Row ${i + 1} of $${name}$ (read left to right) is written as **column ${i + 1}** of $${name}'$ (top to bottom).`,
       math: [`(${r.map(w).join(',\\ ')}) \\to \\text{column } ${i + 1}`],
     })),
     { say: meta.meaning ? 'So:' : 'So the transpose is:', math: [`${name}' = ${texMat(T)}`], after: meta.meaning, end: true },
@@ -329,7 +349,8 @@ export function mulQ(meta: Meta, a: Num[][], b: Num[][], names: [string, string]
   const Cshow = C.map((r) => r.map((x) => wn(x, resDp)));
   const steps: Step[] = [
     {
-      say: `Check the sizes: $${na}$ is $${m} \\times ${n}$ and $${nb}$ is $${n2} \\times ${p}$. The inner numbers match (${n} = ${n2}), so $${na}${nb}$ exists. Its size is the outer numbers: $${m} \\times ${p}$.`,
+      say: `First check that multiplying is allowed. Write the sizes side by side: $${na}$ is $${m} \\times ${n}$ and $${nb}$ is $${n2} \\times ${p}$. The two **middle** numbers are equal (${n} = ${n2}), so yes, it works. The answer's size is the two **outside** numbers: $${m} \\times ${p}$.`,
+      after: 'Why the middle numbers must match: each row of the first matrix gets paired, number by number, with a column of the second. The pairs only line up if the row and the column are equally long.',
     },
   ];
   const fills: { r: number; c: number; at: number }[] = [];
@@ -341,10 +362,13 @@ export function mulQ(meta: Meta, a: Num[][], b: Num[][], names: [string, string]
     const s = steps.length;
     const work = Array.from({ length: p }, (_, j) => {
       const terms = Array.from({ length: n }, (_, k) => `${pw(A[i][k])} \\times ${pw(B[k][j])}`).join(' + ');
-      return `c_{${i + 1}${j + 1}} = ${terms} = ${wn(C[i][j], resDp)}`;
+      const prods = Array.from({ length: n }, (_, k) => mul(A[i][k], B[k][j]));
+      const sum = prods.map((x, k) => (k === 0 ? wn(x, 4) : F(x).n < 0 ? ` - ${wn(mul(x, -1), 4)}` : ` + ${wn(x, 4)}`)).join('');
+      const label = p === 1 && m === 1 ? '' : `\\text{${p === 1 ? `Row ${i + 1}` : m === 1 ? `Column ${j + 1}` : `Row ${i + 1}, column ${j + 1}`}: }\\;`;
+      return `${label}${terms} = ${sum} = ${wn(C[i][j], resDp)}`;
     });
     steps.push({
-      say: `Row ${i + 1} of $${na}$ times each column of $${nb}$: multiply the pairs in order, then **add**.`,
+      say: `Take **row ${i + 1}** of $${na}$ (read across)${p > 1 ? ` with each column of $${nb}$ in turn` : ` with the column of $${nb}$`} (read down). Multiply first with first, second with second${n > 2 ? ', and so on' : ''}, then **add**. ${p > 1 ? `The answers fill row ${i + 1} of the product.` : `The answer goes in row ${i + 1} of the product.`}`,
       math: work,
     });
     for (let j = 0; j < p; j++) fills.push({ r: i, c: j, at: s });
@@ -392,7 +416,7 @@ export function mulQ(meta: Meta, a: Num[][], b: Num[][], names: [string, string]
   } else {
     // A checkpoint for the first element, then the whole product.
     cps.push(
-      numCp('c11', '$c_{11}$', `The first element $c_{11}$ (row 1 × column 1)`, C[0][0], 1, {
+      numCp('c11', 'Top-left number', `The top-left number of the product (row 1 with column 1)`, C[0][0], 1, {
         slips: [
           [mul(A[0][0], B[0][0]), 'Only the first pair was multiplied. Multiply every pair in row 1 and column 1, then add them.'],
           [A[0].reduce((s, x, k) => add(s, mul(x, B[0][k] ?? 0)), F(0)), 'Row 1 of the second matrix was used. Use its **column** 1.'],
@@ -422,14 +446,14 @@ export function existsQ(meta: Meta, sa: [number, number], sb: [number, number], 
   const [na, nb] = names;
   const ok = sa[1] === sb[0];
   const steps: Step[] = [
-    { say: `Write the sizes side by side, first matrix first.`, math: [`${sa[0]} \\times ${sa[1]} \\quad\\text{and}\\quad ${sb[0]} \\times ${sb[1]}`] },
+    { say: `Write the sizes side by side, first matrix first. Size means rows × columns.`, math: [`${sa[0]} \\times ${sa[1]} \\quad\\text{and}\\quad ${sb[0]} \\times ${sb[1]}`] },
     {
       say: ok
-        ? `The inner numbers are ${sa[1]} and ${sb[0]}: equal, so $${na}${nb}$ **exists**.`
-        : `The inner numbers are ${sa[1]} and ${sb[0]}: not equal, so $${na}${nb}$ **does not exist**. Each row of $${na}$ has ${sa[1]} numbers but each column of $${nb}$ has ${sb[0]}, so they cannot be paired.`,
+        ? `Look at the two **middle** numbers: ${sa[1]} and ${sb[0]}. They are equal, so $${na}${nb}$ **exists**.`
+        : `Look at the two **middle** numbers: ${sa[1]} and ${sb[0]}. They are not equal, so $${na}${nb}$ **does not exist**. Each row of $${na}$ has ${sa[1]} numbers but each column of $${nb}$ has ${sb[0]}, so they cannot be paired.`,
     },
     ok
-      ? { say: `Its size is the outer numbers.`, math: [`${na}${nb} \\text{ is } ${sa[0]} \\times ${sb[1]}`], end: true }
+      ? { say: `Its size is the two **outside** numbers.`, math: [`${na}${nb} \\text{ is } ${sa[0]} \\times ${sb[1]}`], end: true }
       : { say: `So the answer is **No**: $${na}${nb}$ does not exist.`, end: true },
   ];
   const cps: Checkpoint[] = [
@@ -506,17 +530,20 @@ export function bestType(t: Set<MType>): MType | null {
   return null;
 }
 
+/** "a, b and c". */
+const listing = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
+
 const WHY: Record<MType, string> = {
   row: 'It has a **single row**.',
   column: 'It has a **single column**.',
-  square: 'It has as many rows as columns, and none of the special patterns below applies.',
-  diagonal: 'Every element **off** the main diagonal is zero.',
-  scalar: 'It is diagonal, and all the diagonal elements are **equal**.',
-  identity: 'It is diagonal, and every diagonal element is **1**.',
-  upper: 'Every element **below** the main diagonal is zero.',
-  lower: 'Every element **above** the main diagonal is zero.',
-  symmetric: 'Each element equals its mirror image across the diagonal: $a_{ij} = a_{ji}$.',
-  skew: 'Each element is the **negative** of its mirror image, $a_{ij} = -a_{ji}$, and the diagonal is all zeros.',
+  square: 'It has as many rows as columns, and none of the special patterns applies.',
+  diagonal: 'Every number **off** the main diagonal is 0.',
+  scalar: 'Every number off the diagonal is 0, and the diagonal numbers are **all equal**.',
+  identity: 'Every number off the diagonal is 0, and every diagonal number is **1**.',
+  upper: 'Every number **below** the main diagonal is 0, so the numbers sit in the upper part.',
+  lower: 'Every number **above** the main diagonal is 0, so the numbers sit in the lower part.',
+  symmetric: 'Fold it along the diagonal: the numbers that land on each other are **equal** (row 1, column 2 matches row 2, column 1, and so on).',
+  skew: 'Fold it along the diagonal: the numbers that land on each other are **equal with opposite signs**, and the diagonal is all 0.',
 };
 
 export function typeQ(meta: Meta, a: Num[][], name: string, rng?: { shuffle<T>(x: T[]): T[] }): PaperQuestion {
@@ -534,15 +561,15 @@ export function typeQ(meta: Meta, a: Num[][], name: string, rng?: { shuffle<T>(x
   const steps: Step[] = [
     {
       say: square
-        ? `Count rows and columns: $${m} \\times ${n}$. They are equal, so it is a **square** matrix. Now look for a pattern.`
-        : `Count rows and columns: $${m} \\times ${n}$. They are not equal, so it is **not square**.`,
+        ? `Count the rows and columns: $${m} \\times ${n}$. They are equal, so it is a **square** matrix. Now look for a pattern.`
+        : `Count the rows and columns: $${m} \\times ${n}$. They are not equal, so it is **not square**.`,
     },
     square
-      ? { say: `Look at the **main diagonal** (top left to bottom right) and at the elements above and below it. ${WHY[best]}` }
+      ? { say: `Look at the **main diagonal** (top-left corner to bottom-right corner, lit up), then at the numbers above it and below it. ${WHY[best]}` }
       : { say: WHY[best] },
     {
       say: `So the most exact name is: **${TYPE_NAME[best]}**.`,
-      after: also.length ? `It is also ${also.map((k) => TYPE_NAME[k].toLowerCase()).join(', ')}${square ? ', and square' : ''}, but "${TYPE_NAME[best].toLowerCase()}" says the most.` : undefined,
+      after: also.length ? `It also fits ${listing([...also.map((k) => TYPE_NAME[k].toLowerCase().replace(/ matrix$/, '')), ...(square ? ['square'] : [])])}, but "${TYPE_NAME[best].toLowerCase()}" is the most exact name.` : undefined,
       end: true,
     },
   ];

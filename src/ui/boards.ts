@@ -91,7 +91,7 @@ function linesHtml(b: LinesBoard): string {
 
 export function boardHtml(b: Board): string {
   const inner = b.kind === 'table' ? tableHtml(b) : b.kind === 'mats' ? matsHtml(b) : linesHtml(b);
-  return `<div class="board bd-${b.kind}">${inner}</div>`;
+  return `<div class="board board-${b.kind}">${inner}</div>`;
 }
 
 /** Show the board as it is at `step` (Infinity: everything, final state). */
@@ -108,16 +108,38 @@ export function setBoardStep(root: HTMLElement, step: number): void {
   }
 }
 
-/** Shrink wide matrix boards to fit their box (down to 70%); the rest scrolls sideways. */
+/**
+ * Fit wide matrix boards to their box: shrink a little (to 85%); if that is not enough, let the
+ * terms wrap onto a second line ("A + B" above "= C"); then shrink again (to 70%). Anything
+ * still wider scrolls sideways.
+ */
 export function fitBoards(root: ParentNode): void {
   requestAnimationFrame(() => {
-    for (const b of root.querySelectorAll<HTMLElement>('.board.bd-mats')) {
+    for (const b of root.querySelectorAll<HTMLElement>('.board.board-mats')) {
       const inner = b.querySelector<HTMLElement>('.bd-mats');
       if (!inner) continue;
       inner.style.zoom = '';
+      inner.classList.remove('wrap');
       const avail = b.clientWidth - 24;
-      const need = inner.scrollWidth;
-      if (need > avail && avail > 0) inner.style.zoom = String(Math.max(0.7, avail / need));
+      if (avail <= 0) continue;
+      let need = inner.scrollWidth;
+      if (need <= avail) continue;
+      if (avail / need < 0.85) {
+        inner.classList.add('wrap');
+        // Width of the widest wrapped line: the terms' extents.
+        const terms = [...inner.children] as HTMLElement[];
+        const lines = new Map<number, number>();
+        for (const t of terms) {
+          if (t.offsetParent === null) continue;
+          const r = t.getBoundingClientRect();
+          const top = Math.round(r.top);
+          const ext = lines.get(top) ?? 0;
+          lines.set(top, ext + r.width + 4);
+        }
+        need = Math.max(...lines.values(), 0);
+        if (need <= avail) continue;
+      }
+      inner.style.zoom = String(Math.max(0.7, avail / need));
     }
   });
 }

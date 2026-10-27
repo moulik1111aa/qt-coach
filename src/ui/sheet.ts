@@ -109,6 +109,7 @@ export function showSheet(app: App, q: PaperQuestion, o: SheetOpts): void {
       s.classList.toggle('current', o.mode === 'walk' && i === shownTo);
     });
     if (boardEl) setBoardStep(boardEl, shownTo);
+    fitBoards(el);
     fitMath(el);
     foot.replaceChildren();
     if (o.mode === 'walk' && shownTo < last) {
@@ -150,7 +151,6 @@ export function showSheet(app: App, q: PaperQuestion, o: SheetOpts): void {
     render(false);
   });
   render(false);
-  fitBoards(el);
   el.querySelector('.sheet')!.animate([{ transform: 'translateY(40px)', opacity: 0 }, { transform: 'none', opacity: 1 }], {
     duration: 260,
     easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',

@@ -136,6 +136,19 @@ Examples of Tough questions in Build 1:
 - Where the book's explanation is unclear or garbled, the card says the same thing correctly in plain language and keeps the book's terms.
 - Each card records its **book page**, so the learner can cross-check with the printed book.
 
+### 4.1a Plain language for a learner who finds equations scary (added 2026-10-28)
+
+The learner gets anxious at dense equations, so every topic in every build follows this standard. The content checker enforces the structural parts.
+
+- **Why first.** Every topic opens with a "why a manager needs this" card (id `why`) built on a business example: bills, sales tables, stock, wages, prices, machine hours.
+- **Numbers before letters.** Each idea is shown first with a small worked example in numbers. The book's general form in letters comes afterwards, usually on an optional card.
+- **One idea per card.** Sentences are short, and every term is defined the first time it appears (element, order, minor, cofactor and so on).
+- **Every step says what and why.** Worked steps say what to do in words ("top-left × bottom-right"), show the intermediate products and sums, and give sign reminders when a minus is involved. Word problems get a `setup` line that explains how the story becomes the equations, and a closing line that states the answer in business words, with a check.
+- **Method in steps.** Numeric topics have a recipe card (id `recipe`). Theory topics have a "writing it in the exam" card (id `exam`) instead.
+- **Optional depth.** Book derivations and letter formulas go on optional cards placed after the required ones. Learn is complete without them.
+- **Plain checkpoint questions.** A checkpoint asks in words, for example "$D_x$ (answers in place of the x-numbers)".
+- **Fits a phone.** Long lines of working break at "=" signs (then before + or −) to fit a 360 px screen. Wide boards wrap ("A + B" above "= C") before they shrink. Both fits are measured for every line of maths.
+
 ### 4.2 Question types
 
 | Type | Source | Used in |
