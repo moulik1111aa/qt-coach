@@ -54,7 +54,7 @@ export function checkScreen(t: Topic | null, o?: CheckOpts): (app: App) => Scree
       const order = rng.shuffle(m.options.map((_, k) => k));
       main.innerHTML = `<div class="card-count faint small">Question ${i + 1} of ${items.length}<span class="lvl ${m.level}">${LEVEL_NAME[m.level]}</span></div>
         <div class="mcq-stem">${richHtml(m.stem)}</div>
-        <div class="mcq-opts">${order.map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${'ABCD'[n] ?? n + 1}</span><span class="opt-t">${richHtml(m.options[k])}</span></button>`).join('')}</div>
+        <div class="mcq-opts">${order.map((k, n) => `<button class="opt" data-k="${k}"${app.debug && k === m.answer ? ' data-right' : ''}><span class="opt-l">${'ABCD'[n] ?? n + 1}</span><span class="opt-t">${richHtml(m.options[k])}</span></button>`).join('')}</div>
         <div class="mcq-after"></div>`;
       main.querySelectorAll<HTMLButtonElement>('.opt').forEach((b) =>
         b.addEventListener('click', () => {

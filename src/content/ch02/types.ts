@@ -169,7 +169,7 @@ export const types: Topic = {
   ],
   examples: [
     typeQ({ id: `${T}:bk1`, topic: T, level: 'basic', source: 'book-example', title: 'Book example: the scalar matrix', page: 2 }, [[115, 0, 0], [0, 115, 0], [0, 0, 115]], 'A'),
-    transposeQ({ id: `${T}:bk2`, topic: T, level: 'basic', source: 'book-example', title: 'Book example: a transpose (numbers)', page: 3, prompt: 'Write down the transpose of the book\'s $2 \\times 3$ nutrient matrix $N$.' }, [[20, 12, 5], [35, 6, 8]], 'N'),
+    transposeQ({ id: `${T}:ex0`, topic: T, level: 'basic', source: 'written', title: 'Extra example: transpose the nutrient matrix', page: 3, prompt: 'Write down the transpose of the book\'s $2 \\times 3$ nutrient matrix $N$ (rows: families; columns: protein, vitamin, fats).' }, [[20, 12, 5], [35, 6, 8]], 'N'),
     typeQ({ id: `${T}:ex1`, topic: T, level: 'basic', source: 'written', title: 'Extra example: a column of prices' }, [[45], [60], [32]], 'P'),
     typeQ({ id: `${T}:ex2`, topic: T, level: 'exam', source: 'written', title: 'Extra example: zeros below the diagonal' }, [[4, -2, 7], [0, 3, 5], [0, 0, -1]], 'U'),
     customQ(

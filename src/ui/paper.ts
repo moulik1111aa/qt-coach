@@ -90,7 +90,8 @@ export function paperScreen(o: PaperOpts): (app: App) => Screen {
                 a.kind === 'choice'
                   ? `<div class="cp-choices">${a.options.map((op) => `<button class="choice" data-choice="${escapeHtml(op)}">${richHtml(op)}</button>`).join('')}</div>`
                   : `<button class="cp-entry" data-entry>${ICONS.pen}<span>Enter ${a.kind === 'matrix' ? 'the matrix' : 'the value'}</span></button>`;
-              return `<li class="cp now"><span class="cp-n">${i + 1}</span><div class="cp-body">
+              const dbg = app.debug ? ` data-kind="${a.kind}" data-answer="${escapeHtml(answerText(a))}"` : '';
+              return `<li class="cp now"${dbg}><span class="cp-n">${i + 1}</span><div class="cp-body">
                 <p class="cp-ask">${richHtml(cp.ask)}${a.kind === 'num' && a.dp > 0 ? ` <span class="faint small">(${a.dp} d.p.)</span>` : ''}</p>
                 ${input}
                 <button class="link" data-show>${ICONS.eye}<span>Show this step</span></button>
