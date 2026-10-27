@@ -1,0 +1,81 @@
+/* The "Let's learn how" sheet and the keypad. */
+
+.sheet-back {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(15, 20, 30, 0.42);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet {
+  width: 100%;
+  max-width: 640px;
+  height: calc(100% - 28px - env(safe-area-inset-top));
+  background: var(--paper);
+  border-radius: 18px 18px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sheet-top { display: flex; justify-content: space-between; align-items: center; padding: 8px 8px 0 var(--gut); }
+.sheet-kicker { color: var(--blue); font-weight: 600; font-size: 0.9em; }
+.sheet-tools { display: flex; }
+.sheet-scroll { flex: 1; overflow-y: auto; padding: 0 var(--gut) 20px; -webkit-overflow-scrolling: touch; }
+.sheet-q { font-size: 1.2em; margin: 4px 0 12px; }
+.sheet-prompt { margin-bottom: 10px; }
+.sheet-scroll > .board { margin-bottom: 12px; }
+.sheet-board { position: sticky; top: 0; z-index: 2; padding: 6px 0 10px; background: var(--paper); box-shadow: 0 8px 10px -10px rgba(0, 0, 0, 0.18); }
+.sheet-board .board { max-height: 36vh; overflow: auto; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 99px; background: var(--sheet); border: 1px solid var(--rule); font-weight: 600; }
+.chip.said .m { color: var(--red); }
+.chip.ans .m { color: var(--green); }
+.slipnote { padding: 10px 14px; border-radius: 8px; background: var(--note); border-left: 3px solid var(--note-line); margin-bottom: 12px; }
+.earlier { color: var(--blue); font-weight: 600; font-size: 0.9em; min-height: 40px; }
+
+.steps { margin-top: 8px; }
+.step { padding-bottom: 14px; }
+.step[hidden] { display: none; }
+.step .step-n { position: absolute; left: 0; width: calc(var(--margin-x) - 16px); text-align: right; font-family: var(--mathf); color: var(--ink-3); font-size: 1.05em; line-height: 1.5; }
+.step.current .step-n { color: var(--blue); font-weight: 700; }
+.step.end .step-n { color: var(--green); }
+.step.end .step-n svg { width: 22px; height: 22px; }
+.step-say { margin: 0 0 4px; }
+.step-math { overflow-x: auto; padding: 2px 0; }
+.step-math .mblock { font-size: 1.12em; margin: 4px 0; }
+.step.end .step-say { font-weight: 700; }
+.step.end .step-math { color: var(--green); }
+.step-after { color: var(--ink-2); margin: 2px 0 0; }
+.foot-hint { margin: 0 0 8px; color: var(--ink-2); font-size: 0.9em; text-align: center; }
+.sheet-foot { background: var(--paper); border-top: 1px solid var(--rule); }
+
+/* Keypad */
+.kp-back { position: fixed; inset: 0; z-index: 40; background: rgba(15, 20, 30, 0.3); display: flex; align-items: flex-end; justify-content: center; }
+.kp {
+  width: 100%;
+  max-width: 640px;
+  background: var(--sheet);
+  border-radius: 18px 18px 0 0;
+  padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+}
+.kp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding-left: 6px; }
+.kp-ask { font-weight: 600; padding-top: 10px; }
+.kp-dp { display: block; font-weight: 500; font-size: 0.82em; color: var(--ink-3); }
+.kp-show { min-height: 64px; display: flex; align-items: center; justify-content: center; padding: 8px 4px; margin: 6px 0 10px; border-bottom: 2px solid var(--blue); }
+.kp-val { font-size: 1.8em; color: var(--blue); }
+.kp-ph { color: var(--ink-3); font-family: var(--ui); font-size: 0.6em; }
+.kp-mat { display: grid; grid-template-columns: repeat(var(--cols), minmax(56px, 1fr)); gap: 6px; padding: 4px 14px; position: relative; }
+.kp-cell { min-height: 46px; border: 1.5px solid var(--rule-2); border-radius: 8px; color: var(--blue); font-size: 1.1em; }
+.kp-cell.on { border-color: var(--blue); background: var(--blue-soft); }
+.kp-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.kp-k { min-height: 54px; border-radius: 10px; background: var(--paper); font-family: var(--mathf); font-size: 1.35em; }
+.kp-k:active { background: var(--rule); }
+.kp-k.fn { font-family: var(--ui); font-size: 1.05em; color: var(--ink-2); }
+.kp-k.fn svg { width: 24px; vertical-align: middle; }
+  .kp-k.ok { background: var(--blue); color: #fff; font-family: var(--ui); font-size: 1em; font-weight: 600; }
+:root[data-theme="dark"] .kp-k.ok { color: #10162B; }
+.kp-k.ok:disabled { opacity: 0.4; }
+.kp-k.ok.wide { grid-column: span 2; }

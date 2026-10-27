@@ -91,10 +91,24 @@ export function setBoardStep(root: HTMLElement, step: number): void {
     const d = el.dataset;
     const at = d.at ? Number(d.at) : 0;
     const until = d.until ? Number(d.until) : Infinity;
-    const shown = at <= step && step < until;
+    const shown = at <= step && (until === Infinity || step < until);
     const hl = d.hl ? Number(d.hl) : Infinity;
     const hlu = d.hlu ? Number(d.hlu) : Infinity;
     el.classList.toggle('off', !shown);
-    el.classList.toggle('lit', shown && hl <= step && step < hlu);
+    el.classList.toggle('lit', shown && hl <= step && (hlu === Infinity || step < hlu) && step !== Infinity);
   }
+}
+
+/** Shrink wide matrix boards to fit their box (down to 70%); the rest scrolls sideways. */
+export function fitBoards(root: ParentNode): void {
+  requestAnimationFrame(() => {
+    for (const b of root.querySelectorAll<HTMLElement>('.board.bd-mats')) {
+      const inner = b.querySelector<HTMLElement>('.bd-mats');
+      if (!inner) continue;
+      inner.style.zoom = '';
+      const avail = b.clientWidth - 24;
+      const need = inner.scrollWidth;
+      if (need > avail && avail > 0) inner.style.zoom = String(Math.max(0.7, avail / need));
+    }
+  });
 }
