@@ -1,0 +1,28 @@
+{
+  "name": "aiio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Aiio: learn Quantitative Techniques for Managers step by step, solving on paper with checkpoints",
+  "scripts": {
+    "setup:local": "sh scripts/link-tools.sh",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "node --test test/*.test.ts",
+    "content": "node scripts/check-content.ts",
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs",
+    "e2e": "playwright test",
+    "check": "npm run typecheck && npm test && npm run content && npm run build && npm run e2e",
+    "android": "node scripts/android.mjs",
+    "icons": "node scripts/icons.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
+    "playwright": "1.56.0",
+    "typescript": "^6.0.3"
+  }
+}

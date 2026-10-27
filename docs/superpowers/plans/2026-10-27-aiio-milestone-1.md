@@ -165,7 +165,7 @@
   - AB, including "does AB exist?".
   - Slips for the product: element-wise product, row × row, wrong order of the result.
 - **Hand-written questions:**
-  - the book's multiplication example, and its row × column example (4 3)(3 2)ᵀ;
+  - the book's multiplication example (with the 52 → 62 Book note), and its row × column example (4 3)(3 2)ᵀ;
   - Exam: a price × quantity bill matrix for 3 shops;
   - Tough: AB ≠ BA with both products existing; finding x, y from A + B = C.
 - MCQs (≥10 per topic) and the formula sheet.

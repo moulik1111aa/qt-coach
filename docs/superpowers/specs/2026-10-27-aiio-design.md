@@ -65,10 +65,12 @@ Each chapter is split into **topics** (the list in §2.1). Each topic runs throu
    - A commerce example is added where it helps (for example, a sales price list as a matrix).
    - Definitions and formulas keep the book's wording and notation, so the learner recognises them in the exam.
    - If the topic needs a skill the book assumes but never teaches, a **"Before you start" primer** comes first (§4.3).
-2. **Worked example.** The book's own example as a "Let's learn how" sheet (§5), revealed one step at a time:
+2. **Worked examples.** Every example is a "Let's learn how" sheet (§5), revealed one step at a time:
+   - First the **book's own example(s)**, kept as printed.
+   - Then **at least 3 extra worked examples at rising difficulty**: one Basic, one Exam and one Tough. Each one teaches something new (a different setting, a sign trap, an edge case), not just new numbers.
    - Before each step, the sheet says: *"Try this step on paper, then tap to check."*
    - A **Book note** appears wherever the book's printed working or answer is wrong.
-   - Topics with no worked example in the book get one written for them, marked "Extra example".
+   - Topics with no example in the book still get the 3 extra examples.
 3. **Solve on paper.** Practice questions climbing from **Basic** to **Exam** level:
    - The learner works on paper and types the **checkpoint values** as they go (§5.2).
    - A wrong value opens the sheet for that step, with the note for that mistake.
@@ -146,6 +148,7 @@ Examples of Tough questions in Build 1:
 **Book discussion questions** ("Questions for Discussion") are all included as hand-written paper questions, with full solutions in the book's method. The book gives no answers for these, so every solution is computed and checked by code (§10).
 
 **Minimum content per topic:**
+- The book's example(s), plus 3 extra worked examples (Basic, Exam, Tough).
 - 10 concept MCQs (theory topics: 15).
 - 3 hand-written Exam-level paper questions.
 - 3 Tough questions.
@@ -366,6 +369,10 @@ Each one is shown as a Book note next to the content it concerns. The list below
 |---|---|---|---|
 | 1 | Classification: Correlation and Regression | Text is a copy of "Collection of Data" | Explain correlation and regression in a sentence each |
 | 2 | Types of matrices (h), (i) | Upper and lower triangular both say "elements above the diagonal are zero" | Upper: zeros *below* the diagonal; lower: zeros *above* |
+| 2 | Matrix multiplication, general form | Second row printed cw + cy, dx + dz | cw + dy, cx + dz |
+| 2 | Matrix multiplication, numeric example | Top-right entry 3 × 9 + 5 × 7 = **52**; the sign between the matrices is printed as "−" | 27 + 35 = **62**; the matrices are multiplied |
+| 2 | Row × column example | (4 3) × (3 2)ᵀ = (4 × 3   3 × 2) = (18) | (4 × 3 **+** 3 × 2) = (12 + 6) = (18) |
+| 2 | Transpose example | A printed as (a b c / r e a), but A′ = (a f / b e / c d) | A = (a b c / f e d), so A′ = (a f / b e / c d) |
 | 5 | Linear equation y = a + bx | "a should not be equal to zero" | b ≠ 0, since the root is x = −a/b |
 | 5 | Discussion Q2: 4x² + 5x + 47 | No guidance | b² − 4ac < 0, so there are no real roots. The app teaches this case |
 | 6 | Example 9.2 (bouncing ball) | First rebound a = 100/3; working gives 100 + 2(100) | a = 200/3, so S = 100 + 2 × (200/3)/(1/3) = 100 + 400 = **500 m** (the printed final answer is right) |
